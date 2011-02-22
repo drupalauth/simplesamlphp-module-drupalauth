@@ -1,0 +1,64 @@
+#summary Installation instructions
+#labels Phase-Deploy
+
+= Introduction =
+
+The installation process is pretty straight forward:
+#Install [http://drupal.org Drupal]
+#Install [http://simplesamlphp.org simpleSAMLphp]
+#Download [http://code.google.com/p/drupalauth/ drupalauth]
+#Unpack drupalauth
+#Move the drupalauth module directory into simplesamlphp/modules directory
+#Configure the authentication source in simplesamlphp/config/authsources.php
+
+
+= Details =
+
+Put something like this into simplesamlphp/config/authsources.php
+
+{{{
+'drupal-userpass' => array(
+        'drupalauth:UserPass',
+
+        // The filesystem path of the Drupal directory.
+        'drupalroot' => '/home/drupal-7.0',            
+
+        // Whether to turn on debug
+        'debug' => true,
+
+        // Which attributes should be retrieved from the Drupal site.
+        // This can be an associate array of attribute names, or NULL, in which case
+        // all attributes are fetched.
+        //
+        // If you want everything (except) the password hash do this:
+        //      'attributes' => NULL,
+        //
+        // If you want to pick and choose do it like this:
+        //'attributes' => array(
+        //                    array('drupaluservar'   => 'uid',  'callit' => 'uid'),
+        //                      array('drupaluservar' => 'name', 'callit' => 'cn'),
+        //                      array('drupaluservar' => 'mail', 'callit' => 'mail'),
+        //                      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
+        //                      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
+        //                      array('drupaluservar' => 'field_organization','callit' => 'ou'),
+        //                      array('drupaluservar' => 'roles','callit' => 'roles'),
+        //                     ),
+        //
+        // The value for 'drupaluservar' is the variable name for the attribute in the
+        // Drupal user object.
+        //
+        // The value for 'callit' is the name you want the attribute to have when it's
+        // returned after authentication. You can use the same value in both or you can
+        // customize by putting something different in for 'callit'. For an example,
+        // look at uid and name above.
+        'attributes' => array(
+                              array('drupaluservar' => 'uid',  'callit' => 'uid'),
+                              array('drupaluservar' => 'name', 'callit' => 'cn'),
+                              array('drupaluservar' => 'mail', 'callit' => 'mail'),
+                              array('drupaluservar' => 'field_first_name','callit' => 'givenName'),
+                              array('drupaluservar' => 'field_last_name','callit' => 'sn'),
+                              array('drupaluservar' => 'field_organization','callit' => 'ou'),
+                              array('drupaluservar' => 'roles','callit' => 'roles'),
+                             ),
+),
+}}}
