@@ -4,7 +4,7 @@
 = Introduction =
 
 The installation process is pretty straight forward:
-  # Install [http://drupal.org Drupal]
+  # Install [http://drupal.org Drupal] 7.x
   # Install [http://simplesamlphp.org simpleSAMLphp]
   # Download [http://code.google.com/p/drupalauth/ drupalauth]
   # Unpack drupalauth
