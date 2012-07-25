@@ -11,6 +11,13 @@
  *
  * The homepage of this project: http://code.google.com/p/drupalauth/
  *
+ * !!! NOTE WELLL !!!
+ *
+ * You must configure store.type in config/config.php to be something
+ * other than phpsession, or this module will not work. SQL and memcache
+ * work just fine. The tell tail sign of the problem is infinite browser
+ * redirection when the SimpleSAMLphp login page should be presented.
+ *
  * -------------------------------------------------------------------
  *
  * To use this put something like this into config/authsources.php:
@@ -104,20 +111,20 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 		$this->debug      = $drupalAuthConfig->getDebug();
 		$this->attributes = $drupalAuthConfig->getAttributes();
 
-		define(DRUPAL_ROOT, $drupalAuthConfig->getDrupalroot());
-		
+    if (!defined('DRUPAL_ROOT')) {
+      define('DRUPAL_ROOT', $drupalAuthConfig->getDrupalroot());
+    }
+
 		/* Include the Drupal bootstrap */
-		require_once(DRUPAL_ROOT.'/includes/bootstrap.inc');
+    //require_once(DRUPAL_ROOT.'/includes/common.inc');
+    require_once(DRUPAL_ROOT.'/includes/bootstrap.inc');
 		require_once(DRUPAL_ROOT.'/includes/file.inc');
-		
-		/* Initialize the Drupal environment (and pray it doesn't break everything) */
-		// we do not want to use DRUPAL_BOOTSTRAP_SESSION because that level of initialization
-		// interacts negatively with SimpleSAMLphp. However, we need to fake the
-		// Drupal watchdog out it won't complain about missing a uid. So, we need to 
-		// create a fake user object with uid of 0 just before calling drupal_bootstrap().
-		global $user;
-		$user->uid = 0;
-		drupal_bootstrap(DRUPAL_BOOTSTRAP_VARIABLES);
+
+    /* Using DRUPAL_BOOTSTRAP_FULL means that SimpleSAMLphp must use an session storage
+     * mechanism other than phpsession (see: store.type in config.php). However, this trade-off
+     * prevents the need for hackery here and makes this module work better in different environments.
+     */
+		drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 		
 		// we need to be able to call Drupal user function so we load some required modules
 		drupal_load('module', 'system');
@@ -152,8 +159,6 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 
 		// load the user object from Drupal
 		$drupaluser = user_load($drupaluid);
-
-//print(':DEBUG:<pre>'); print_r($drupaluser); die('</pre>');		
 
 		// get all the attributes out of the user object
 		$userAttrs = get_object_vars($drupaluser);
