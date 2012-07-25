@@ -6,7 +6,7 @@
 The installation process is pretty straight forward:
   # Install [http://drupal.org Drupal] 7.x
   # Install [http://simplesamlphp.org simpleSAMLphp]
-  # Configure SimpleSAMLphp to use something other than "phpsession" for session storage, e.g., SQL or memcache (See: store.type in config/config.php).
+  # Configure SimpleSAMLphp to use something other than "phpsession" for session storage, e.g., SQL or memcache (See: store.type in simplesamlphp/config/config.php).
   # Download [http://code.google.com/p/drupalauth/ drupalauth]
   # Unpack drupalauth
   # Move the drupalauth module directory into simplesamlphp/modules directory
@@ -63,3 +63,7 @@ Put something like this into simplesamlphp/config/authsources.php
                              ),
 ),
 }}}
+
+= Notes =
+
+You must configure "store.type" in simplesamlphp/config/config.php to be something other than "phpsession", or this module may not work. "SQL" and "memcache" work just fine. The tell tail sign of the problem is infinite browser redirection when the SimpleSAMLphp login page should be presented.
