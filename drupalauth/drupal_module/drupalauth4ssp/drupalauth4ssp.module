@@ -51,6 +51,24 @@ function drupalauth4ssp_user_login(&$edit, $account) {
   _drupalauth4ssp_exec($account);
 }
 
+// implements hook_user_logout()
+function drupalauth4ssp_user_logout($account) {
+
+  // Get the configuration information from SimpleSAMLphp
+  $sspConfig = _drupalauth4ssp_get_simplesamlphp_config();
+
+  // If we don't have configuration, exit without doing anything
+  if (!is_array($sspConfig)) {
+    // The least we can do is write something to the watchdog so someone will know what's happening.
+    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $user->name));
+    return;
+  }
+
+  // Delete the cookie
+  setcookie($sspConfig['cookie_name'], "", time() - 3600 , $sspConfig['baseurlpath']);
+
+}
+
 
 // implements hook_user_view()
 function drupalauth4ssp_user_view($account, $view_mode, $langcode) {
@@ -153,7 +171,7 @@ function _drupalauth4ssp_exec($account) {
   setcookie($sspConfig['cookie_name'], sha1($sspConfig['secretsalt']) . ':' . $account->uid, 0, $sspConfig['baseurlpath']);
 
   // if the ReturnTo URL is present, send the user to the URL
-  if(isset($_GET['ReturnTo']) && $_GET['ReturnTo']) {
+  if (isset($_GET['ReturnTo']) && $_GET['ReturnTo']) {
     header('Location: ' . $_GET['ReturnTo']);
     die;
   }

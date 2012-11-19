@@ -207,6 +207,13 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
     }
 
+
+    // Delete the cookie, we don't need it anymore
+    if(isset($_COOKIE[$this->cookie_name])) {
+      setcookie($this->cookie_name, "", time() - 3600, $this->cookie_path);
+    }
+
+
     // load the user object from Drupal
     $drupaluser = user_load($drupaluid);
 
@@ -453,10 +460,9 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
      */
     unset($_SESSION['uid']);
 
-    $strCookieName = "drupalauth4ssp";
-
-    if (isset($_COOKIE[$strCookieName])) {
-      setcookie($strCookieName, "", time() - 3600, $this->cookie_path);
+    // Added armor plating, just in case
+    if (isset($_COOKIE[$this->cookie_name])) {
+      setcookie($this->cookie_name, "", time() - 3600, $this->cookie_path);
 
     }
 
