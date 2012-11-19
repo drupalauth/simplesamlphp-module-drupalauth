@@ -60,6 +60,12 @@ class sspmod_drupalauth_ConfigHelper {
   private $drupal_logout_url;
 
 
+  /**
+   * The Drupal login URL
+   */
+  private $drupal_login_url;
+
+
 	/**
 	 * Constructor for this configuration parser.
 	 *
@@ -80,6 +86,7 @@ class sspmod_drupalauth_ConfigHelper {
     $this->attributes = $config->getArray('attributes', NULL);
     $this->cookie_name = $config->getString('cookie_name', 'drupalauth4ssp');
     $this->drupal_logout_url = $config->getString('drupal_logout_url', NULL);
+    $this->drupal_login_url = $config->getString('drupal_login_url', NULL);
 
 	}
 	
@@ -127,6 +134,15 @@ class sspmod_drupalauth_ConfigHelper {
    */
   public function getDrupalLogoutURL() {
      return $this->drupal_logout_url;
+  }
+
+  /**
+   * Return the Drupal login URL
+   *
+   * @param array $drupal_login_url the URL of the Drupal login page
+   */
+  public function getDrupalLoginURL() {
+     return $this->drupal_login_url;
   }
 
 }
