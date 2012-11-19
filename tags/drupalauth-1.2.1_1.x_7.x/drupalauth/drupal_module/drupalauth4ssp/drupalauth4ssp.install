@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * the install file for the drupalauth4ssp module
+ */
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function drupalauth4ssp_uninstall() {
+
+  //Remove the created system variables
+  //variable_del("drupalauth4ssp_somevar");
+
+  if ($query1) {
+    drupal_set_message(st('The drupalauth4ssp module was uninstalled successfully.'));
+  }
+  else {
+    drupal_set_message(st('There was an error removing the drupalauth4ssp module.'), 'error');
+  }
+
+}
