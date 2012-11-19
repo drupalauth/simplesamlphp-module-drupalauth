@@ -42,10 +42,22 @@ class sspmod_drupalauth_ConfigHelper {
 	private $debug;
 
 
-	/**
-	 * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
-	 */
-	private $attributes;
+  /**
+   * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
+   */
+  private $attributes;
+
+
+  /**
+   * The name of the cookie
+   */
+  private $cookie_name;
+
+
+  /**
+   * The Drupal logout URL
+   */
+  private $drupal_logout_url;
 
 
 	/**
@@ -65,7 +77,9 @@ class sspmod_drupalauth_ConfigHelper {
 
 		$this->drupalroot = $config->getString('drupalroot');
 		$this->debug = $config->getBoolean('debug', FALSE);
-		$this->attributes = $config->getArray('attributes', NULL);
+    $this->attributes = $config->getArray('attributes', NULL);
+    $this->cookie_name = $config->getString('cookie_name', 'drupalauth4ssp');
+    $this->drupal_logout_url = $config->getString('drupal_logout_url', NULL);
 
 	}
 	
@@ -87,15 +101,32 @@ class sspmod_drupalauth_ConfigHelper {
 	public function getDrupalroot() {
 	   return $this->drupalroot; 
 	}
-		
 
-	/**
-	 * Return the attributes
-	 *
-	 * @param array $attributes the array of Drupal attributes to use, NULL means use all available attributes
-	 */
-	public function getAttributes() {
-	   return $this->attributes; 
-	}
+  /**
+   * Return the attributes
+   *
+   * @param array $attributes the array of Drupal attributes to use, NULL means use all available attributes
+   */
+  public function getAttributes() {
+     return $this->attributes;
+  }
+
+  /**
+   * Return the cookie name
+   *
+   * @param array $cookie_name the name of the cookie
+   */
+  public function getCookieName() {
+     return $this->cookie_name;
+  }
+
+  /**
+   * Return the Drupal logout URL
+   *
+   * @param array $drupal_logout_url the URL of the Drupal logout page
+   */
+  public function getDrupalLogoutURL() {
+     return $this->drupal_logout_url;
+  }
 
 }
