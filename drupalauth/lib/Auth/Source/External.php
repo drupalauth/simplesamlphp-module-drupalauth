@@ -40,6 +40,9 @@
  *    // the URL of the Drupal logout page
  *    'drupal_logout_url' => 'https://www.example.com/drupal7/user/logout',
  *
+ *    // the URL of the Drupal login page
+ *    'drupal_login_url' => 'https://www.example.com/drupal7/user',
+ *
  *    // Which attributes should be retrieved from the Drupal site.
  *
  *              'attributes' => array(
@@ -119,6 +122,11 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
    */
   private $drupal_logout_url;
 
+  /**
+   * The login URL of the Drupal site
+   */
+  private $drupal_login_url;
+
 	/**
 	 * Constructor for this authentication source.
 	 *
@@ -141,6 +149,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
     $this->attributes  = $drupalAuthConfig->getAttributes();
     $this->cookie_name = $drupalAuthConfig->getCookieName();
     $this->drupal_logout_url = $drupalAuthConfig->getDrupalLogoutURL();
+    $this->drupal_login_url = $drupalAuthConfig->getDrupalLoginURL();
 
     if (!defined('DRUPAL_ROOT')) {
       define('DRUPAL_ROOT', $drupalAuthConfig->getDrupalroot());
@@ -327,7 +336,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 		 * is also part of this module, but in a real example, this would likely be
 		 * the absolute URL of the login page for the site.
 		 */
-		$authPage = 'https://idp.localhost/drupal7/user?ReturnTo=' . $returnTo;
+		$authPage = $this->drupal_login_url . '?ReturnTo=' . $returnTo;
 
 		/*
 		 * The redirect to the authentication page.
