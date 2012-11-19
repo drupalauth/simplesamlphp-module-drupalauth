@@ -127,7 +127,7 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 		drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 		
 		// we need to be able to call Drupal user function so we load some required modules
-		drupal_load('module', 'system');
+    drupal_load('module', 'system');
 		drupal_load('module', 'user');
 		drupal_load('module', 'field');
 
