@@ -1,0 +1,161 @@
+<?php
+
+/**
+ * @file
+ * drupalauth4ssp module for Drupal.
+ *
+ * This module tightly integrates the SimpleSAMLphp Identity Provider login experience with a Drupal site.
+ *
+ */
+
+
+/**
+ * Implements hook_menu().
+ */
+function drupalauth4ssp_menu() {
+  $items = array();
+
+  $items['admin/config/people/drupalauth4ssp'] = array(
+    'title' => 'Drupalauth for SimpleSAMLphp Settings',
+    'description' => 'Control the various settings of the drupalauth4ssp module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('drupalauth4ssp_settings'),
+    'access arguments' => array('administer drupalauth4ssp'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function drupalauth4ssp_admin_paths() {
+  return array('admin/config/people/drupalauth4ssp' => TRUE);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function drupalauth4ssp_permission() {
+  return array(
+    'administer drupalauth4ssp' => array(
+      'title' => t('Administer drupalauth4ssp'),
+      'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+    ),
+  );
+}
+
+// implements hook_user_login()
+function drupalauth4ssp_user_login(&$edit, $account) {
+  _drupalauth4ssp_exec($account);
+}
+
+
+// implements hook_user_view()
+function drupalauth4ssp_user_view($account, $view_mode, $langcode) {
+  _drupalauth4ssp_exec($account);
+}
+
+/**
+ * Implements settings for the module.
+ */
+function drupalauth4ssp_settings() {
+
+  $form['drupalauth4ssp_setup'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Basic Setup'),
+    '#collapsible' => FALSE,
+  );
+  $form['drupalauth4ssp_setup']['drupalauth4ssp_installdir'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Installation directory (default: /var/simplesamlphp)'),
+    '#default_value' => variable_get('drupalauth4ssp_installdir', NULL),
+    '#description' => t('The base directory of simpleSAMLphp. Absolute path with no trailing slash.'),
+  );
+  $form['drupalauth4ssp_setup']['drupalauth4ssp_authsource'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Authentication source (The one that uses the drupalauth:External class)'),
+    '#default_value' => variable_get('drupalauth4ssp_authsource', NULL),
+    '#description' => t('The simpleSAMLphp authentication source.'),
+  );
+
+  return system_settings_form($form);
+}
+
+
+/**
+ * Returns the SimpleSAMLphp configuration
+ */
+function _drupalauth4ssp_get_simplesamlphp_config() {
+
+  $config = NULL;
+
+  // Get the simplesamlphp session.
+  $basedir = variable_get('drupalauth4ssp_installdir', NULL);
+
+  // if we don't have a va
+  if (!strlen($basedir)) {
+    return;
+  }
+
+  require_once($basedir . '/lib/_autoload.php');
+
+  $sspConfig = SimpleSAML_Configuration::getInstance();
+
+  if (!is_object($sspConfig)) {
+    return;
+  }
+
+  // get the secretsalt
+  $config['secretsalt'] = $sspConfig->getValue('secretsalt');
+
+  // get the baseurlpath
+  $config['baseurlpath'] = '/' . $sspConfig->getValue('baseurlpath');
+
+  unset($sspConfig);
+
+  $sspAuthsources = SimpleSAML_Configuration::getConfig('authsources.php');
+
+  // get the cookie_name
+  $config['cookie_name'] = $sspAuthsources->getValue('cookie_name', 'drupalauth4ssp');
+
+  unset($sspAuthsources);
+
+  // make sure every configuration setting is present
+  foreach ($config as $val) {
+
+    if (!strlen($val)) {
+      return;
+    }
+
+  }
+
+  return $config;
+
+}
+
+
+// sets a special cookie
+function _drupalauth4ssp_exec($account) {
+
+  // Get the configuration information from SimpleSAMLphp
+  $sspConfig = _drupalauth4ssp_get_simplesamlphp_config();
+
+  // If we don't have configuration, exit without doing anything
+  if (!is_array($sspConfig)) {
+    // The least we can do is write something to the watchdog so someone will know what's happening.
+    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $user->name));
+    return;
+  }
+
+  // Store the authenticated user's uid in the cookie
+  setcookie($sspConfig['cookie_name'], sha1($sspConfig['secretsalt']) . ':' . $account->uid, 0, $sspConfig['baseurlpath']);
+
+  // if the ReturnTo URL is present, send the user to the URL
+  if(isset($_GET['ReturnTo']) && $_GET['ReturnTo']) {
+    header('Location: ' . $_GET['ReturnTo']);
+    die;
+  }
+
+}
