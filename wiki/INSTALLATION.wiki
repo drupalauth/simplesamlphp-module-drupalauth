@@ -4,16 +4,61 @@
 = Introduction =
 
 The installation process is pretty straight forward:
-  # Install [http://drupal.org Drupal] 7.x
+  # Install [http://drupal.org Drupal] 7.x (or 6.x)
   # Install [http://simplesamlphp.org simpleSAMLphp]
   # Configure SimpleSAMLphp to use something other than "phpsession" for session storage, e.g., SQL or memcache (See: store.type in simplesamlphp/config/config.php).
   # Download [http://code.google.com/p/drupalauth/ drupalauth]
   # Unpack drupalauth
   # Move the drupalauth module directory into simplesamlphp/modules directory
   # Configure the authentication source in simplesamlphp/config/authsources.php
+  # (Approach #1) Install the drupal4ssp module in Drupal
 
 
-= Details =
+= Two Approaches =
+
+== 1) Authenticate against Drupal but use the Drupal login page ==
+
+The advantage of this approach is that the SimpleSAMLphp IdP session is tied to a Drupal session. This allows the user who is already logged into the Drupal site to then navigate to a SAML SP that uses the IdP without the need to authenticate again.
+
+=== Details ===
+
+Configure the authentication source by putting something like this into simplesamlphp/config/authsources.php
+
+{{{
+'drupal-userpass' => array(
+     'drupalauth:External',
+ 
+     // The filesystem path of the Drupal directory.
+     'drupalroot' => '/var/www/drupal',
+ 
+     // Whether to turn on debug
+     'debug' => true,
+ 
+     // the URL of the Drupal logout page
+     'drupal_logout_url' => 'https://www.example.com/drupal/user/logout',
+ 
+     // the URL of the Drupal login page
+     'drupal_login_url' => 'https://www.example.com/drupal/user',
+ 
+     // Which attributes should be retrieved from the Drupal site.
+ 
+               'attributes' => array(
+                                     array('drupaluservar'   => 'uid',  'callit' => 'uid'),
+                                      array('drupaluservar' => 'name', 'callit' => 'cn'),
+                                      array('drupaluservar' => 'mail', 'callit' => 'mail'),
+                                      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
+                                      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
+                                      array('drupaluservar' => 'field_organization','callit' => 'ou'),
+                                      array('drupaluservar' => 'roles','callit' => 'roles'),
+                                    ),
+),
+}}}
+
+== 2) Authenticate against Drupal but use the SimpleSAMLphp login page ==
+
+The advantage of this approach is that their is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
+
+=== Details ===
 
 Put something like this into simplesamlphp/config/authsources.php
 
@@ -22,7 +67,7 @@ Put something like this into simplesamlphp/config/authsources.php
         'drupalauth:UserPass',
 
         // The filesystem path of the Drupal directory.
-        'drupalroot' => '/home/drupal-7.0',            
+        'drupalroot' => '/home/drupal',            
 
         // Whether to turn on debug
         'debug' => true,
