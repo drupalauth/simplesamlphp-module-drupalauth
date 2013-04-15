@@ -10,7 +10,7 @@ The installation process is pretty straight forward:
   # Download [http://code.google.com/p/drupalauth/ drupalauth]
   # Unpack drupalauth
   # Move the drupalauth module directory into simplesamlphp/modules directory
-  # Configure the authentication source in simplesamlphp/config/authsources.php
+  # Configure the authentication source in simplesamlphp/config/authsources.php (drupalauth:External for approach #1 and drupalauth:UserPass for approach #2)
   # (Approach #1) Install the drupal4ssp module in Drupal
 
 
