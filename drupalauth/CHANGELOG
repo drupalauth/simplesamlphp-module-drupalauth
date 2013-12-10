@@ -1,0 +1,9 @@
+20131210 Steve Moitozo <steve_moitozo@sil.org>
+
+  Resolved security issue (defect #9 - identified by alanabarrett0).
+
+    Expanded the use of the salted hash to ensure that an attacker cannot change the uid of the authenticated Drupal user by manipulating the value of a cookie.
+
+    Modified files:
+      drupal_module/drupalauth4ssp/drupalauth4ssp.module - concatenate uid with salt before hashing
+      lib/Auth/Source/External.php - concatenate uid with salt before hashing and minor adjustments

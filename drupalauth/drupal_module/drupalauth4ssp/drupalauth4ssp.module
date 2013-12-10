@@ -167,8 +167,8 @@ function _drupalauth4ssp_exec($account) {
     return;
   }
 
-  // Store the authenticated user's uid in the cookie
-  setcookie($sspConfig['cookie_name'], sha1($sspConfig['secretsalt']) . ':' . $account->uid, 0, $sspConfig['baseurlpath']);
+  // Store the authenticated user's uid in the cookie (create a validation hash to ensure nobody tampers with the uid)
+  setcookie($sspConfig['cookie_name'], sha1($sspConfig['secretsalt'] . $account->uid) . ':' . $account->uid, 0, $sspConfig['baseurlpath']);
 
   // if the ReturnTo URL is present, send the user to the URL
   if (isset($_GET['ReturnTo']) && $_GET['ReturnTo']) {
