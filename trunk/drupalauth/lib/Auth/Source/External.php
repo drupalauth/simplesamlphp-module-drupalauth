@@ -159,6 +159,8 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
     $this->cookie_path = '/' . $ssp_config->getValue('baseurlpath');
     $this->cookie_salt = $ssp_config->getValue('secretsalt');
 
+    $a = getcwd();
+    chdir(DRUPAL_ROOT);
 
     /* Include the Drupal bootstrap */
     //require_once(DRUPAL_ROOT.'/includes/common.inc');
@@ -176,7 +178,8 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
     drupal_load('module', 'user');
     drupal_load('module', 'field');
 
-	}
+    chdir($a);
+  }
 
 
 	/**
@@ -195,13 +198,13 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
       // make sure the hash matches
       // make sure the UID is passed
-      if(isset($arrCookie[0]) && $arrCookie[0]) {
-        if(sha1($this->cookie_salt) == $arrCookie[0]) {
-          if(isset($arrCookie[1]) && $arrCookie[1]) {
+      if( (isset($arrCookie[0]) && $arrCookie[0]) && (isset($arrCookie[1]) && $arrCookie[1]) ) {
 
+        // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
+        if(sha1($this->cookie_salt . $arrCookie[1]) == $arrCookie[0]) {
             $drupaluid = $arrCookie[1];
-
-          }
+        } else {
+            throw new SimpleSAML_Error_Exception('Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.');
         }
       }
 
@@ -213,63 +216,71 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
       setcookie($this->cookie_name, "", time() - 3600, $this->cookie_path);
     }
 
+    if (!empty($drupaluid)) {
 
-    // load the user object from Drupal
-    $drupaluser = user_load($drupaluid);
+      $a = getcwd();
+      chdir(DRUPAL_ROOT);
 
-    // get all the attributes out of the user object
-    $userAttrs = get_object_vars($drupaluser);
+      // load the user object from Drupal
+      $drupaluser = user_load($drupaluid);
 
-    // define some variables to use as arrays
-    $userAttrNames = null;
-    $attributes    = null;
+      chdir($a);
 
-    // figure out which attributes to include
-    if(NULL == $this->attributes){
-       $userKeys = array_keys($userAttrs);
+      // get all the attributes out of the user object
+      $userAttrs = get_object_vars($drupaluser);
 
-       // populate the attribute naming array
-       foreach($userKeys as $userKey){
-          $userAttrNames[$userKey] = $userKey;
-       }
+      // define some variables to use as arrays
+      $userAttrNames = null;
+      $attributes = null;
 
-    }else{
-       // populate the array of attribute keys
-       // populate the attribute naming array
-       foreach($this->attributes as $confAttr){
+      // figure out which attributes to include
+      if(NULL == $this->attributes){
+        $userKeys = array_keys($userAttrs);
 
-          $userKeys[] = $confAttr['drupaluservar'];
-          $userAttrNames[$confAttr['drupaluservar']] = $confAttr['callit'];
+        // populate the attribute naming array
+        foreach($userKeys as $userKey){
+            $userAttrNames[$userKey] = $userKey;
+        }
 
-       }
+      }else{
+        // populate the array of attribute keys
+        // populate the attribute naming array
+        foreach($this->attributes as $confAttr){
 
-    }
+            $userKeys[] = $confAttr['drupaluservar'];
+            $userAttrNames[$confAttr['drupaluservar']] = $confAttr['callit'];
 
-    // an array of the keys that should never be included
-    // (e.g., pass)
-    $skipKeys = array('pass');
+        }
 
-    // package up the user attributes
-    foreach($userKeys as $userKey){
+      }
 
-      // skip any keys that should never be included
-      if(!in_array($userKey, $skipKeys)){
+      // an array of the keys that should never be included
+      // (e.g., pass)
+      $skipKeys = array('pass');
 
-        if(   is_string($userAttrs[$userKey])
-           || is_numeric($userAttrs[$userKey])
-           || is_bool($userAttrs[$userKey])    ){
+      // package up the user attributes
+      foreach($userKeys as $userKey){
 
-           $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]);
+        // skip any keys that should never be included
+        if(!in_array($userKey, $skipKeys)){
 
-        }elseif(is_array($userAttrs[$userKey])){
+          if(   is_string($userAttrs[$userKey])
+            || is_numeric($userAttrs[$userKey])
+            || is_bool($userAttrs[$userKey])    ){
 
-           // if the field is a field module field, special handling is required
-           if(substr($userKey,0,6) == 'field_'){
-              $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]['und'][0]['safe_value']);
-           }else{
-           // otherwise treat it like a normal array
-              $attributes[$userAttrNames[$userKey]] = $userAttrs[$userKey];
-           }
+            $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]);
+
+          }elseif(is_array($userAttrs[$userKey])){
+
+            // if the field is a field module field, special handling is required
+            if(substr($userKey,0,6) == 'field_'){
+                $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]['und'][0]['safe_value']);
+            }else{
+            // otherwise treat it like a normal array
+                $attributes[$userAttrNames[$userKey]] = $userAttrs[$userKey];
+            }
+          }
+
         }
 
       }
