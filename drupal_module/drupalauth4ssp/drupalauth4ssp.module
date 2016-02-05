@@ -60,7 +60,7 @@ function drupalauth4ssp_user_logout($account) {
   // If we don't have configuration, exit without doing anything
   if (!is_array($sspConfig)) {
     // The least we can do is write something to the watchdog so someone will know what's happening.
-    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $user->name));
+    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $account->name));
     return;
   }
 
@@ -163,7 +163,7 @@ function _drupalauth4ssp_exec($account) {
   // If we don't have configuration, exit without doing anything
   if (!is_array($sspConfig)) {
     // The least we can do is write something to the watchdog so someone will know what's happening.
-    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $user->name));
+    watchdog('drupalauth4ssp', 'Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', array('%name' => $account->name));
     return;
   }
 
