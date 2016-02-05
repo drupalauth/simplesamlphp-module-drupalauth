@@ -52,6 +52,7 @@
  *                                     array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
  *                                     array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
  *                                     array('drupaluservar' => 'field_organization','callit' => 'ou'),
+ *                                     array('drupaluservar' => 'field_country:iso2','callit' => 'country'),
  *                                     array('drupaluservar' => 'roles','callit' => 'roles'),
  *                                   ),
  *  ),
@@ -70,6 +71,12 @@
  *                     array('drupaluservar' => 'name', 'callit' => 'cn'),
  *                     array('drupaluservar' => 'mail', 'callit' => 'mail'),
  *                     array('drupaluservar' => 'roles','callit' => 'roles'),
+ *                      ),
+ *
+ *  If you want to take another field column beside value you can declare it
+ *  like this:
+ * 'attributes' => array(
+ *                       array('drupaluservar' => field_country:iso2','callit' => 'country'),
  *                      ),
  *
  *  The value for 'drupaluservar' is the variable name for the attribute in the
@@ -228,6 +235,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
       // get all the attributes out of the user object
       $userAttrs = get_object_vars($drupaluser);
+      $wrapper = entity_metadata_wrapper('user', $drupaluser->uid);
 
       // define some variables to use as arrays
       $userAttrNames = null;
@@ -258,36 +266,46 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
       // (e.g., pass)
       $skipKeys = array('pass');
 
-      // package up the user attributes
+      // Package up the user attributes.
       foreach($userKeys as $userKey){
+        $value = '';
+        $attributes[$userAttrNames[$userKey]] = array($value);
 
-        // skip any keys that should never be included
-        if(!in_array($userKey, $skipKeys)){
-
-          if(   is_string($userAttrs[$userKey])
-            || is_numeric($userAttrs[$userKey])
-            || is_bool($userAttrs[$userKey])    ){
-
+        // Skip any keys that should never be included.
+        if (!in_array($userKey, $skipKeys)) {
+          if (isset($userAttrs[$userKey])
+            && (is_string($userAttrs[$userKey])
+              || is_numeric($userAttrs[$userKey])
+              || is_bool($userAttrs[$userKey]))
+          ) {
             $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]);
-
-          }elseif(is_array($userAttrs[$userKey])){
-
-            // if the field is a field module field, special handling is required
-            if(substr($userKey,0,6) == 'field_'){
-                $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]['und'][0]['safe_value']);
-            }else{
-            // otherwise treat it like a normal array
-                $attributes[$userAttrNames[$userKey]] = $userAttrs[$userKey];
+          }
+          // Get attributes from user fields.
+          else {
+            try {
+              list($field_name, $col_name) = explode(':', "$userKey:");
+              // Get value from a specific column from wrapper.
+              if (!empty($col_name) && !in_array($col_name, array('value', 'safe_value'))) {
+                if ($wrapper->{$field_name}->value()) {
+                  $value = $wrapper->{$field_name}->{$col_name}->value();
+                }
+              }
+              // Default get value from wrapper.
+              elseif ($wrapper->{$field_name}->value()) {
+                $value = $wrapper->{$field_name}->value();
+              }
+              $attributes[$userAttrNames[$userKey]] = is_array($value) ? $value : array($value);
+            }
+            catch (Exception $e) {
+              watchdog_exception('simplesaml', $e);
             }
           }
-
         }
-
       }
+      drupal_alter('drupalauth_attributes', $attributes, $drupaluser);
+
+      return $attributes;
     }
-
-    return $attributes;
-
 	}
 
 
