@@ -65,8 +65,27 @@ function drupalauth4ssp_user_logout($account) {
   }
 
   // Delete the cookie
-  setcookie($sspConfig['cookie_name'], "", time() - 3600 , $sspConfig['baseurlpath']);
+  setcookie($sspConfig['cookie_name'], sha1($sspConfig['secretsalt'] . $account->uid) . ':' . $account->uid, time() - 3600, $sspConfig['baseurlpath']);
 
+  // Invalidate SimpleSAML session by expiring it.
+  $session = SimpleSAML_Session::getSessionFromRequest();
+  $session->setAuthorityExpire($session->getAuthority(), 1);
+
+  // If the ReturnTo URL is present, send the user to the URL.
+  if (isset($_GET['ReturnTo']) && $_GET['ReturnTo']) {
+    $destination = &drupal_static(__FUNCTION__);
+    $destination = $_GET['ReturnTo'];
+  }
+}
+
+/**
+ * Implements hook_drupal_goto_alter().
+ */
+function drupalauth4ssp_drupal_goto_alter(&$path, &$options, &$http_response_code) {
+  $destination = &drupal_static('drupalauth4ssp_user_logout');
+  if (!$path && $destination) {
+    drupal_goto($destination);
+  }
 }
 
 
@@ -138,7 +157,7 @@ function _drupalauth4ssp_get_simplesamlphp_config() {
   $config['secretsalt'] = $sspConfig->getValue('secretsalt');
 
   // get the baseurlpath
-  $config['baseurlpath'] = '/' . $sspConfig->getValue('baseurlpath');
+  $config['baseurlpath'] = '/' . $sspConfig->getBaseURL();
 
   unset($sspConfig);
 
