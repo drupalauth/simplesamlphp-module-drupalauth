@@ -2,7 +2,15 @@
 
 This module for SimpleSAMLphp provides an Authentication Source for authenticating users against a local Drupal site. This allows the administrator to leverage the user management and integration capabilities of Drupal for managing the identity life cycle and the power of SimpleSAMLphp for identity integration.
 
-**NOTE:** This is a simpleSAMLphp module, NOT a Drupal module. If you want to connect your Drupal site to a SAML or Shibboleth IdP, see the simplesamlphp_auth module for Drupal at http://drupal.org/project/simplesamlphp_auth. 
+**NOTE:** This is a simpleSAMLphp module, NOT a Drupal module. If you want to connect your Drupal site to a SAML or Shibboleth IdP, see the simplesamlphp_auth module for Drupal at http://drupal.org/project/simplesamlphp_auth.
+
+Drupal + SimpleSAMLphp + drupalauth = Complete SAML Identity Provider (IdP)
+
+Users interact with Drupal to create accounts, manage accounts, and authenticate. SAML SPs interact with [SimpleSAMLphp](https://simplesamlphp.org/). Drupalauth ties Drupal to SimpleSAMLphp.
+
+The drupalauth module for simpleSAMLphp makes it easy to create a SAML or Shibboleth identity provider (IdP) by enabling authentication of users against a Drupal site on the same server. This allows the administrator to leverage the user management and integration capabilities of [Drupal](http://drupal.org) for managing the identity life cycle.
+
+NOTE: This is software establishes a SAML identity provider (IdP) using Drupal as the user database instead of LDAP. If you want to establish your Drupal site as a SAML service provider (SP) connected to a SAML or Shibboleth IdP, see the [simplesamlphp_auth](https://www.drupal.org/project/simplesamlphp_auth) module for Drupal.
 
 ## Installation
 
