@@ -15,8 +15,7 @@ This module for SimpleSAMLphp provides an Authentication Source for authenticati
 6. Move the drupalauth module directory into simplesamlphp/modules directory
 7. Configure the authentication source in simplesamlphp/config/authsources.php as described below
 
-#### Configuration
-##### Authenticate against Drupal but use the Drupal login page
+#### Authenticate against Drupal but use the Drupal login page
 
 The advantage of this approach is that the SimpleSAMLphp IdP session is tied to a Drupal session. This allows the user who is already logged into the Drupal site to then navigate to a SAML SP that uses the IdP without the need to authenticate again.
 
@@ -52,7 +51,7 @@ Configure the authentication source by putting following code into `simplesamlph
 ),
 ```
 
-##### Authenticate against Drupal but use the SimpleSAMLphp login page
+#### Authenticate against Drupal but use the SimpleSAMLphp login page
 
 The advantage of this approach is that their is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
 
