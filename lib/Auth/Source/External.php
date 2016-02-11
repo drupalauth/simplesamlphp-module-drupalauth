@@ -496,8 +496,8 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
     }
 
     $logout_url = $this->drupal_logout_url;
-    if ($state['ReturnTo']) {
-      $logout_url . '?ReturnTo=' . $state['ReturnTo'];
+    if (!empty($state['ReturnTo'])) {
+      $logout_url .= '?ReturnTo=' . $state['ReturnTo'];
     }
 
     /**
