@@ -22,7 +22,7 @@ The advantage of this approach is that the SimpleSAMLphp IdP session is tied to 
 
 **Details**
 
-Configure the authentication source by putting something like this into `simplesamlphp/config/authsources.php`
+Configure the authentication source by putting following code into `simplesamlphp/config/authsources.php`
 
 ```php
 'drupal-userpass' => array( 'drupalauth:External',
@@ -51,3 +51,56 @@ Configure the authentication source by putting something like this into `simples
   ),
 ),
 ```
+
+##### Authenticate against Drupal but use the SimpleSAMLphp login page
+
+The advantage of this approach is that their is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
+
+**Details**
+
+Configure the authentication source by putting following code into `simplesamlphp/config/authsources.php`
+
+```php
+'drupal-userpass' => array( 'drupalauth:UserPass',
+
+    // The filesystem path of the Drupal directory.
+    'drupalroot' => '/home/drupal',            
+
+    // Whether to turn on debug
+    'debug' => true,
+
+    // Which attributes should be retrieved from the Drupal site.
+    // This can be an associate array of attribute names, or NULL, in which case
+    // all attributes are fetched.
+    //
+    // If you want everything (except) the password hash do this:
+    //      'attributes' => NULL,
+    //
+    // If you want to pick and choose do it like this:
+    //'attributes' => array(
+    //                    array('drupaluservar'   => 'uid',  'callit' => 'uid'),
+    //                      array('drupaluservar' => 'name', 'callit' => 'cn'),
+    //                      array('drupaluservar' => 'mail', 'callit' => 'mail'),
+    //                      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
+    //                      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
+    //                      array('drupaluservar' => 'field_organization','callit' => 'ou'),
+    //                      array('drupaluservar' => 'roles','callit' => 'roles'),
+    //                     ),
+    //
+    // The value for 'drupaluservar' is the variable name for the attribute in the
+    // Drupal user object.
+    //
+    // The value for 'callit' is the name you want the attribute to have when it's
+    // returned after authentication. You can use the same value in both or you can
+    // customize by putting something different in for 'callit'. For an example,
+    // look at uid and name above.
+    'attributes' => array(
+      array('drupaluservar'   => 'uid',  'callit' => 'uid'),
+      array('drupaluservar' => 'name', 'callit' => 'cn'),
+      array('drupaluservar' => 'mail', 'callit' => 'mail'),
+      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
+      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
+      array('drupaluservar' => 'field_organization','callit' => 'ou'),
+      array('drupaluservar' => 'roles','callit' => 'roles'),
+  ),
+), ```
