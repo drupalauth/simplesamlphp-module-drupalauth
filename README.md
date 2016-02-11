@@ -103,4 +103,5 @@ Configure the authentication source by putting following code into `simplesamlph
       array('drupaluservar' => 'field_organization','callit' => 'ou'),
       array('drupaluservar' => 'roles','callit' => 'roles'),
   ),
-), ```
+),
+```
