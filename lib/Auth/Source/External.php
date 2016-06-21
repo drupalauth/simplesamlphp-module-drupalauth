@@ -484,10 +484,6 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
       session_start();
     }
 
-    /*
-     * In this example we simply remove the 'uid' from the session.
-     */
-    unset($_SESSION['uid']);
 
     // Added armor plating, just in case
     if (isset($_COOKIE[$this->cookie_name])) {
@@ -495,17 +491,26 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
     }
 
-    $logout_url = $this->drupal_logout_url;
-    if (!empty($state['ReturnTo'])) {
-      $logout_url .= '?ReturnTo=' . $state['ReturnTo'];
-    }
+    // Get the current directory, and change to the Drupal root.
+    // Assuming we have a Drupal boot-strapped environment.
+    $cwd = getcwd();
+    chdir(DRUPAL_ROOT);
 
-    /**
-     * Redirect the user to the Drupal logout page
-     */
-    header('Location: ' . $logout_url);
-    die;
+    global $user;
 
+    watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+    // Execute the logout process.
+    module_invoke_all('user_logout', $user);
+
+    // Save the saml session data but destroy the rest.
+    $saml_session = $_SESSION['SimpleSAMLphp_SESSION'];
+
+    $_SESSION = array();
+    session_destroy();
+    session_start();
+
+    $_SESSION['SimpleSAMLphp_SESSION'] = $saml_session;
+
+    chdir($cwd);
   }
-
 }
