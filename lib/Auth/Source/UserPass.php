@@ -131,6 +131,8 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 		drupal_load('module', 'user');
 		drupal_load('module', 'field');
 
+		// Drupal's bootstrap overrides SimpleSamlPHP's exception handler.
+		restore_exception_handler();
 	}
 
 

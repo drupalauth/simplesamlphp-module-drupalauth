@@ -186,6 +186,9 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
     drupal_load('module', 'field');
 
     chdir($a);
+
+    // Drupal's bootstrap overrides SimpleSamlPHP's exception handler.
+    restore_exception_handler();
   }
 
 
