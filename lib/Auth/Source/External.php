@@ -192,9 +192,15 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 	/**
 	 * Retrieve attributes for the user.
 	 *
+	 * @param bool $throw_on_invalid_cookie
+	 *   (Optional) By default (TRUE), an invalid cookie value will cause an
+	 *   exception to be thrown. FALSE will just return NULL instead.
+	 *
 	 * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
+	 *
+	 * @throws \SimpleSAML_Error_Exception
 	 */
-	private function getUser() {
+	private function getUser($throw_on_invalid_cookie = TRUE) {
 
     $drupaluid          = NULL;
 
@@ -210,7 +216,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
         // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
         if(sha1($this->cookie_salt . $arrCookie[1]) == $arrCookie[0]) {
             $drupaluid = $arrCookie[1];
-        } else {
+        } elseif ($throw_on_invalid_cookie) {
             throw new SimpleSAML_Error_Exception('Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.');
         }
       }
@@ -320,7 +326,13 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 	public function authenticate(&$state) {
 		assert('is_array($state)');
 
-		$attributes = $this->getUser();
+		// Get user. If at this point a cookie is still present (which once was set
+		// by the drupal module), this may be from an older login attempt to another
+		// site that was terminated halfway - so delete the cookie if it's invalid
+		// instead of throwing an exception (which would likely make SimpleSAMLphp
+		// redirect back to the site with the exception message at this point,
+		// meaning any login attempts would fail until the cookie was deleted.)
+		$attributes = $this->getUser(FALSE);
 		if ($attributes !== NULL) {
 			/*
 			 * The user is already authenticated.
