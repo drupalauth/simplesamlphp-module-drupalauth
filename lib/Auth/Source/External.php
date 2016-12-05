@@ -229,7 +229,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
       chdir(DRUPAL_ROOT);
 
       // load the user object from Drupal
-      $drupaluser = user_load($drupaluid);
+      $drupaluser = user_load($drupaluid, TRUE);
 
       chdir($a);
 
