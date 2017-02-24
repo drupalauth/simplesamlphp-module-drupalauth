@@ -328,10 +328,11 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
 		// Get user. If at this point a cookie is still present (which once was set
 		// by the drupal module), this may be from an older login attempt to another
-		// site that was terminated halfway - so delete the cookie if it's invalid
-		// instead of throwing an exception (which would likely make SimpleSAMLphp
-		// redirect back to the site with the exception message at this point,
-		// meaning any login attempts would fail until the cookie was deleted.)
+		// site that was terminated halfway. So if it's invalid, delete the cookie
+		// and continue to Drupal site for authentication (rather than throwing an
+		// exception, which would likely make SimpleSAMLphp redirect back to the
+		// SP with the exception message at this point, meaning any login attempts
+		// would fail until the cookie was deleted manually).
 		$attributes = $this->getUser(FALSE);
 		if ($attributes !== NULL) {
 			/*
