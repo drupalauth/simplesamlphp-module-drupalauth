@@ -225,13 +225,13 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 
     if (!empty($drupaluid)) {
 
-      $a = getcwd();
+      $current_dir = getcwd();
       chdir(DRUPAL_ROOT);
 
       // load the user object from Drupal
       $drupaluser = user_load($drupaluid, TRUE);
 
-      chdir($a);
+      chdir($current_dir);
 
       // get all the attributes out of the user object
       $userAttrs = get_object_vars($drupaluser);
@@ -302,7 +302,10 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
           }
         }
       }
+
+      chdir(DRUPAL_ROOT);
       drupal_alter('drupalauth_attributes', $attributes, $drupaluser);
+      chdir($current_dir);
 
       return $attributes;
     }
