@@ -22,17 +22,16 @@
  *
  * To use this put something like this into config/authsources.php:
  *
- *    'drupal-userpass' => array(
- *        'drupalauth:UserPass',
+ * 'drupal-userpass' => array(
+ *     'drupalauth:UserPass',
  *
- *        // The filesystem path of the Drupal directory.
- *        'drupalroot' => '/var/www/drupal-8.0',
+ *     // The filesystem path of the Drupal directory.
+ *     'drupalroot' => '/var/www/drupal-8.0',
  *
- *        // Whether to turn on debug
- *        'debug' => true,
+ *     // Whether to turn on debug
+ *     'debug' => true,
  *
- *        // Which attributes should be retrieved from the Drupal site.
- *
+ *     // Which attributes should be retrieved from the Drupal site.
  *    'attributes' => array(
  *        array('field_name' => 'uid', 'attribute_name' => 'uid'),
  *        array('field_name' => 'roles', 'attribute_name' => 'roles'),
@@ -42,7 +41,7 @@
  *        array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
  *        array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
  *    ),
- *  ),
+ * ),
  *
  * Format of the 'attributes' array explained:
  * - field_name - name of the Drupal field.

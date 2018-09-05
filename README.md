@@ -11,7 +11,7 @@ NOTE: This is software establishes a SAML identity provider (IdP) using Drupal a
 ### simpleSAMLphp module
 
 This module for SimpleSAMLphp provides an Authentication Source for authenticating users against a local Drupal site. This allows the administrator to leverage the user management and integration capabilities of Drupal for managing the identity life cycle and the power of SimpleSAMLphp for identity integration. This is a simpleSAMLphp module, NOT a Drupal module.
-Download and enabme simpleSAMLmodule only if case if you want to use Drupal as Identity Provider.
+Download this module only if you want to use Drupal as Identity Provider.
 
 
 ### Drupal modules
@@ -22,14 +22,15 @@ If you want to connect your Drupal site as Service Provider to a SAML or Shibbol
 ## Installation
 
 #### Reqirements
-1. Install Drupal 7.x
+1. Install Drupal 8.x
 2. Install simpleSAMLphp 
-3. Configure SimpleSAMLphp to use something other than `phpsession` for session storage, e.g., SQL or memcache (See: `store.type` in `simplesamlphp/config/config.php`).
-4. Download drupalauth and unpack drupalauth
-5. Move the drupalauth module directory into `simplesamlphp/modules` directory
-6. Configure the authentication source in `simplesamlphp/config/authsources.php` as described below.
+3. Install drupalauth
+4. Configure SimpleSAMLphp to use something other than `phpsession` for session storage, e.g., SQL or memcache (See: `store.type` in `simplesamlphp/config/config.php`).
+5. Configure the authentication source in `simplesamlphp/config/authsources.php` as described below.
 
 #### Authenticate against Drupal but use the Drupal login page
+
+**Not supported yet!!!**
 
 The advantage of this approach is that the SimpleSAMLphp IdP session is tied to a Drupal session. This allows the user who is already logged into the Drupal site to then navigate to a SAML SP that uses the IdP without the need to authenticate again.
 
@@ -67,54 +68,33 @@ Configure the authentication source by putting following code into `simplesamlph
 
 #### Authenticate against Drupal but use the SimpleSAMLphp login page
 
-The advantage of this approach is that their is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
+The advantage of this approach is that there is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
 
 **Details**
 
 Configure the authentication source by putting following code into `simplesamlphp/config/authsources.php`
 
 ```php
-'drupal-userpass' => array('drupalauth:UserPass',
+'drupal-userpass' => array(
+    'drupalauth:UserPass',
 
-    // The filesystem path of the Drupal directory.
-    'drupalroot' => '/home/drupal',            
+    // The filesystem path of the Drupal directory.            
+    'drupalroot' => '/var/www/drupal-8.0',
 
     // Whether to turn on debug
     'debug' => true,
 
     // Which attributes should be retrieved from the Drupal site.
-    // This can be an associate array of attribute names, or NULL, in which case
-    // all attributes are fetched.
-    //
-    // If you want everything (except) the password hash do this:
-    //      'attributes' => NULL,
-    //
-    // If you want to pick and choose do it like this:
-    //'attributes' => array(
-    //                    array('drupaluservar'   => 'uid',  'callit' => 'uid'),
-    //                      array('drupaluservar' => 'name', 'callit' => 'cn'),
-    //                      array('drupaluservar' => 'mail', 'callit' => 'mail'),
-    //                      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
-    //                      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
-    //                      array('drupaluservar' => 'field_organization','callit' => 'ou'),
-    //                      array('drupaluservar' => 'roles','callit' => 'roles'),
-    //                     ),
-    //
-    // The value for 'drupaluservar' is the variable name for the attribute in the
-    // Drupal user object.
-    //
-    // The value for 'callit' is the name you want the attribute to have when it's
-    // returned after authentication. You can use the same value in both or you can
-    // customize by putting something different in for 'callit'. For an example,
-    // look at uid and name above.
-    'attributes' => array(
-      array('drupaluservar'   => 'uid',  'callit' => 'uid'),
-      array('drupaluservar' => 'name', 'callit' => 'cn'),
-      array('drupaluservar' => 'mail', 'callit' => 'mail'),
-      array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
-      array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
-      array('drupaluservar' => 'field_organization','callit' => 'ou'),
-      array('drupaluservar' => 'roles','callit' => 'roles'),
-  ),
+   'attributes' => array(
+       array('field_name' => 'uid', 'attribute_name' => 'uid'),
+       array('field_name' => 'roles', 'attribute_name' => 'roles'), 
+       array('field_name' => 'name', 'attribute_name' => 'cn'),
+       array('field_name' => 'mail', 'attribute_name' => 'mail'),
+       array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
+       array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
+       array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
+   ),
 ),
 ```
+
+Leave 'attributes' empty or unset to get all available field values. Attribute names in this case would be "$field_name:$property_name".
