@@ -83,7 +83,7 @@ class sspmod_drupalauth_ConfigHelper {
 
 		$this->drupalroot = $config->getString('drupalroot');
 		$this->debug = $config->getBoolean('debug', FALSE);
-    $this->attributes = $config->getArray('attributes', NULL);
+    $this->attributes = $config->getArray('attributes', []);
     $this->cookie_name = $config->getString('cookie_name', 'drupalauth4ssp');
     $this->drupal_logout_url = $config->getString('drupal_logout_url', NULL);
     $this->drupal_login_url = $config->getString('drupal_login_url', NULL);
