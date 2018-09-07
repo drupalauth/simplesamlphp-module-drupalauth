@@ -27,7 +27,11 @@ class User implements IteratorAggregate
 
     public function getIterator()
     {
-
         return new ArrayIterator($this->fields);
+    }
+
+    public function hasField($field_name)
+    {
+            return isset($this->fields[$field_name]);
     }
 }

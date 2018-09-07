@@ -58,4 +58,59 @@ class UserTest extends TestCase
         $this->assertEquals($count, count($user->getIterator()), 'Returned expected quantity of fields');
     }
 
+    public function userHasFieldDataProvider()
+    {
+        return [
+            [
+                [
+                    'field_name' => [
+                        0 => [
+                            'property_1' => 'property_0_1_value',
+                            'property_2' => 'property_0_2_value',
+                        ],
+                        1 => [
+                            'property_1' => 'property_1_1_value',
+                            'property_2' => '',
+                        ],
+                    ],
+                ],
+                [
+                    'field_name' => true,
+                    'missing_field' => false,
+                ],
+            ],
+            [
+                [
+                    'field_1' => [
+                        0 => [
+                            'property_1' => 'property_1_value',
+                            'property_2' => 'property_2_value',
+                        ]
+                    ],
+                    'field_2' => [
+                        0 => [
+                            'value' => 'secret',
+                        ]
+                    ],
+                    'field_3' => 'value',
+                ],
+                [
+                    'field_1' => true,
+                    'field_2' => true,
+                    'field_3' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider userHasFieldDataProvider
+     */
+    public function testHasField($values, $checks)
+    {
+        $user = new User($values);
+        foreach ($checks as $field_name => $result) {
+            $this->assertEquals($result, $user->hasField($field_name), 'Field check returns expected result');
+        }
+    }
 }
