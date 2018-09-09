@@ -15,18 +15,53 @@ Download this module only if you want to use Drupal as Identity Provider.
 
 
 ### Drupal modules
+
 If you want to use Drupal as Identity Provide you should also install [drupalauth4ssp](https://www.drupal.org/project/drupalauth4ssp) that is available on Drupal.org. Please note that all issues related to Drupal functionality should be reported there.
 
 If you want to connect your Drupal site as Service Provider to a SAML or Shibboleth IdP, use the [simplesamlphp_auth](http://drupal.org/project/simplesamlphp_auth) module for Drupal.
 
 ## Installation
 
-#### Reqirements
+### Requirements
+
 1. Install Drupal 8.x
 2. Install simpleSAMLphp 
 3. Install drupalauth
 4. Configure SimpleSAMLphp to use something other than `phpsession` for session storage, e.g., SQL or memcache (See: `store.type` in `simplesamlphp/config/config.php`).
 5. Configure the authentication source in `simplesamlphp/config/authsources.php` as described below.
+
+#### Authenticate against Drupal but use the SimpleSAMLphp login page
+
+The advantage of this approach is that there is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
+
+**Details**
+
+Configure the authentication source by putting following code into `simplesamlphp/config/authsources.php`
+
+```php
+'drupal-userpass' => array(
+    'drupalauth:UserPass',
+
+    // The filesystem path of the Drupal directory.            
+    'drupalroot' => '/var/www/drupal-8.0',
+
+    // Whether to turn on debug
+    'debug' => true,
+
+    // Which attributes should be retrieved from the Drupal site.
+   'attributes' => array(
+       array('field_name' => 'uid', 'attribute_name' => 'uid'),
+       array('field_name' => 'roles', 'attribute_name' => 'roles'), 
+       array('field_name' => 'name', 'attribute_name' => 'cn'),
+       array('field_name' => 'mail', 'attribute_name' => 'mail'),
+       array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
+       array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
+       array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
+   ),
+),
+```
+
+Leave 'attributes' empty or unset to get all available field values. Attribute names in this case would be "$field_name:$property_name".
 
 #### Authenticate against Drupal but use the Drupal login page
 
@@ -65,36 +100,3 @@ Configure the authentication source by putting following code into `simplesamlph
   ),
 ),
 ```
-
-#### Authenticate against Drupal but use the SimpleSAMLphp login page
-
-The advantage of this approach is that there is no obvious connection between SimpleSAMLphp IdP and the Drupal site.
-
-**Details**
-
-Configure the authentication source by putting following code into `simplesamlphp/config/authsources.php`
-
-```php
-'drupal-userpass' => array(
-    'drupalauth:UserPass',
-
-    // The filesystem path of the Drupal directory.            
-    'drupalroot' => '/var/www/drupal-8.0',
-
-    // Whether to turn on debug
-    'debug' => true,
-
-    // Which attributes should be retrieved from the Drupal site.
-   'attributes' => array(
-       array('field_name' => 'uid', 'attribute_name' => 'uid'),
-       array('field_name' => 'roles', 'attribute_name' => 'roles'), 
-       array('field_name' => 'name', 'attribute_name' => 'cn'),
-       array('field_name' => 'mail', 'attribute_name' => 'mail'),
-       array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
-       array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
-       array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
-   ),
-),
-```
-
-Leave 'attributes' empty or unset to get all available field values. Attribute names in this case would be "$field_name:$property_name".
