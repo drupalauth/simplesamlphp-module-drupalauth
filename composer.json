@@ -1,7 +1,7 @@
 {
-  "name": "sanchiz/simplesamlphp-module-drupalauth",
+  "name": "drupalauth/simplesamlphp-module-drupalauth",
   "description": "A SimpleSAMLphp module adding support for Drupal as the authentication source.",
-  "homepage": "https://github.com/Sanchiz/drupalauth",
+  "homepage": "https://github.com/drupalauth/simplesamlphp-module-drupalauth",
   "type": "simplesamlphp-module",
   "keywords": [
     "SimpleSAMLphp",
@@ -13,6 +13,11 @@
     {
       "name": "Steve Moitozo",
       "email": "smoitozo@gmail.com"
+    },
+    {
+      "name": "Contributors",
+      "homepage": "https://github.com/drupalauth/simplesamlphp-module-drupalauth/graphs/contributors",
+      "role": "Contributors"
     }
   ],
   "require": {
