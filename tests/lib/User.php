@@ -34,4 +34,9 @@ class User implements IteratorAggregate
     {
             return isset($this->fields[$field_name]);
     }
+
+    public function __get($field_name)
+    {
+        return isset($this->fields[$field_name]) ? $this->fields[$field_name] : null;
+    }
 }

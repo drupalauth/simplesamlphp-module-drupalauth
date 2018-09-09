@@ -113,4 +113,19 @@ class UserTest extends TestCase
             $this->assertEquals($result, $user->hasField($field_name), 'Field check returns expected result');
         }
     }
+
+    /**
+     * @dataProvider userHasFieldDataProvider
+     */
+    public function test__get($values, $checks)
+    {
+        $user = new User($values);
+        foreach ($checks as $field_name => $result) {
+            if ($result) {
+                $this->assertNotEmpty($user->{$field_name}, 'Returned not empty value for field');
+            } else {
+                $this->assertEmpty($user->{$field_name}, 'Returned empty value for field');
+            }
+        }
+    }
 }
