@@ -26,9 +26,9 @@ Following [Semantic Versioning](https://semver.org/) is hard when you have multi
 
 So in a X.Y.Z version:
 
-    - X - major SimpleSAMLphp version
-    - Y - major Drupal version
-    - Z - inthis module incremental version
+- X - major SimpleSAMLphp version
+- Y - major Drupal version
+- Z - inthis module incremental version
     
 Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this module version 1 we will have tag 1.8.1. Same thing for Drupal 7 will be 1.7.1.
 
