@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="drupalauth">
+    <description>The coding standard for drupalauth.</description>
+
+    <rule ref="PSR2" />
+    <file>./lib</file>
+    <file>./www</file>
+</ruleset>
