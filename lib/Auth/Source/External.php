@@ -375,7 +375,11 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 		 * is also part of this module, but in a real example, this would likely be
 		 * the absolute URL of the login page for the site.
 		 */
-		$authPage = $this->drupal_login_url . '?ReturnTo=' . $returnTo;
+    $authPage = $this->drupal_login_url . '?ReturnTo=' . $returnTo;
+    $url_data = parse_url($this->drupal_login_url);
+    if (!empty($url_data['query'])) {
+      $authPage = $url_data['scheme'] .'://'. $url_data['host'] . $url_data['path'] . '?' . $url_data['query'] . '&ReturnTo=' . $returnTo;
+    }
 
 		/*
 		 * The redirect to the authentication page.
