@@ -77,8 +77,8 @@ class ConfigHelper
      */
     public function __construct($config, $location)
     {
-        assert('is_array($config)');
-        assert('is_string($location)');
+        assert(is_array($config));
+        assert(is_string($location));
 
         $this->location = $location;
 
@@ -95,7 +95,7 @@ class ConfigHelper
         $this->cookie_path = Configuration::getInstance()->getBasePath();
         $this->cookie_salt = Config::getSecretSalt();
     }
-    
+
 
     /**
      * Returns debug mode.

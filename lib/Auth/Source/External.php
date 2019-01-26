@@ -92,8 +92,8 @@ class External extends Source
      */
     public function __construct($info, $config)
     {
-        assert('is_array($info)');
-        assert('is_array($config)');
+        assert(is_array($info));
+        assert(is_array($config));
 
         /* Call the parent constructor first, as required by the interface. */
         parent::__construct($info, $config);
