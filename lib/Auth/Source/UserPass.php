@@ -98,8 +98,8 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 	 * @param array $config  Configuration.
 	 */
 	public function __construct($info, $config) {
-		assert('is_array($info)');
-		assert('is_array($config)');
+		assert(is_array($info));
+		assert(is_array($config));
 
 		/* Call the parent constructor first, as required by the interface. */
 		parent::__construct($info, $config);
@@ -148,8 +148,8 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 	 * @return array  Associative array with the users attributes.
 	 */
 	protected function login($username, $password) {
-		assert('is_string($username)');
-		assert('is_string($password)');
+		assert(is_string($username));
+		assert(is_string($password));
 
 		// authenticate the user
 		$drupaluid = user_authenticate($username, $password);

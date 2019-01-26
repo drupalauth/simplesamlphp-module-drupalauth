@@ -73,8 +73,8 @@ class sspmod_drupalauth_ConfigHelper {
 	 * @param string $location  The location of this configuration. Used for error reporting.
 	 */
 	public function __construct($config, $location) {
-		assert('is_array($config)');
-		assert('is_string($location)');
+		assert(is_array($config));
+		assert(is_string($location));
 
 		$this->location = $location;
 
