@@ -1,5 +1,11 @@
 <?php
 
+namespace SimpleSAML\Module\drupalauth\Auth\Source;
+
+use SimpleSAML\Error\Error;
+use SimpleSAML\Module\core\Auth\UserPassBase;
+use SimpleSAML\Module\drupalauth\ConfigHelper;
+
 /**
  * Drupal authentication source for SimpleSAMLphp.
  *
@@ -55,13 +61,13 @@
  * @author Steve Moitozo <steve_moitozo@sil.org>, SIL International
  * @package drupalauth
  */
-class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBase
+class UserPass extends UserPassBase
 {
 
     /**
      * Configuration object.
      *
-     * @var sspmod_drupalauth_ConfigHelper
+     * @var \SimpleSAML\Module\drupalauth\ConfigHelper
      */
     private $config;
 
@@ -82,7 +88,7 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
         parent::__construct($info, $config);
 
         /* Get the configuration for this module */
-        $drupalAuthConfig = new sspmod_drupalauth_ConfigHelper(
+        $drupalAuthConfig = new ConfigHelper(
             $config,
             'Authentication source ' . var_export($this->authId, true)
         );
@@ -126,13 +132,13 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
         // Authenticate the user.
         $uid = $userAuth->authenticate($username, $password);
         if ($uid === false) {
-            throw new SimpleSAML_Error_Error('WRONGUSERPASS');
+            throw new Error('WRONGUSERPASS');
         }
 
         // Load the user object from Drupal.
         $drupaluser = \Drupal\user\Entity\User::load($uid);
         if ($drupaluser->isBlocked()) {
-            throw new SimpleSAML_Error_Error('WRONGUSERPASS');
+            throw new Error('WRONGUSERPASS');
         }
 
         $requested_attributes = $this->config->getAttributes();

@@ -1,5 +1,9 @@
 <?php
 
+namespace SimpleSAML\Module\drupalauth;
+
+use SimpleSAML\Configuration;
+
 /**
  * Drupal authentication source configuration parser.
  *
@@ -18,7 +22,7 @@
  * @package drupalauth
  * @version $Id$
  */
-class sspmod_drupalauth_ConfigHelper
+class ConfigHelper
 {
 
 
@@ -81,7 +85,7 @@ class sspmod_drupalauth_ConfigHelper
         $this->location = $location;
 
         /* Parse configuration. */
-        $config = SimpleSAML_Configuration::loadFromArray($config, $location);
+        $config = Configuration::loadFromArray($config, $location);
 
         $this->drupalroot = $config->getString('drupalroot');
         $this->debug = $config->getBoolean('debug', false);
