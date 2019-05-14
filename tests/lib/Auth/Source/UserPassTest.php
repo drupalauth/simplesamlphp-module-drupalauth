@@ -2,7 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-
 class UserPassTest extends TestCase
 {
 
