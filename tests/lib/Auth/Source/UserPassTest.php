@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\Module\drupalauth\Auth\Source\UserPass;
 
 class UserPassTest extends TestCase
 {
@@ -17,7 +18,7 @@ class UserPassTest extends TestCase
 
     protected function setUp()
     {
-        $this->stub = $this->getMockBuilder(sspmod_drupalauth_Auth_Source_UserPass::class)
+        $this->stub = $this->getMockBuilder(UserPass::class)
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
         $this->class = new \ReflectionClass($this->stub);
