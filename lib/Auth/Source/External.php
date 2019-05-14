@@ -2,26 +2,25 @@
 
 namespace SimpleSAML\Module\drupalauth\Auth\Source;
 
+use Drupal\user\Entity\User;
 use SimpleSAML\Auth\Source;
 use SimpleSAML\Auth\State;
 use SimpleSAML\Error\BadRequest;
+use SimpleSAML\Error\Error;
 use SimpleSAML\Error\Exception;
 use SimpleSAML\Module;
+use SimpleSAML\Module\drupalauth\ConfigHelper;
+use SimpleSAML\Module\drupalauth\DrupalHelper;
 use SimpleSAML\Utils\HTTP;
 
 /**
- * Drupalath authentication source for using Drupal's login page.
- *
- * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org
+ * Drupal authentication source for SimpleSAMLphp using Drupal's login page.
  *
  * This class is an authentication source which is designed to
  * more closely integrate with a Drupal site. It causes the user to be
  * delivered to Drupal's login page, if they are not already authenticated.
  *
- *
- * The homepage of this project: http://code.google.com/p/drupalauth/
- *
- * !!! NOTE WELLL !!!
+ * !!! NOTE WELL !!!
  *
  * You must configure store.type in config/config.php to be something
  * other than phpsession, or this module will not work. SQL and memcache
@@ -37,168 +36,72 @@ use SimpleSAML\Utils\HTTP;
  *
  * To use this put something like this into config/authsources.php:
  *
- *  'drupal-userpass' => array(
- *    'drupalauth:External',
+ * 'drupal-userpass' => array(
+ *     'drupalauth:External',
  *
- *    // The filesystem path of the Drupal directory.
- *    'drupalroot' => '/var/www/drupal-7.0',
+ *     // The filesystem path of the Drupal directory.
+ *     'drupalroot' => '/var/www/drupal-8.0',
  *
- *    // Whether to turn on debug
- *    'debug' => true,
+ *     // Whether to turn on debug
+ *     'debug' => true,
  *
- *    // the URL of the Drupal logout page
+ *    // URL of the Drupal logout page.
  *    'drupal_logout_url' => 'https://www.example.com/drupal7/user/logout',
  *
- *    // the URL of the Drupal login page
+ *    // URL of the Drupal login page.
  *    'drupal_login_url' => 'https://www.example.com/drupal7/user',
  *
- *    // Which attributes should be retrieved from the Drupal site.
- *
- *              'attributes' => array(
- *                                    array('drupaluservar'   => 'uid',  'callit' => 'uid'),
- *                                     array('drupaluservar' => 'name', 'callit' => 'cn'),
- *                                     array('drupaluservar' => 'mail', 'callit' => 'mail'),
- *                                     array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
- *                                     array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
- *                                     array('drupaluservar' => 'field_organization','callit' => 'ou'),
- *                                     array('drupaluservar' => 'field_country:iso2','callit' => 'country'),
- *                                     array('drupaluservar' => 'roles','callit' => 'roles'),
- *                                   ),
- *  ),
+ *     // Which attributes should be retrieved from the Drupal site.
+ *    'attributes' => array(
+ *        array('field_name' => 'uid', 'attribute_name' => 'uid'),
+ *        array('field_name' => 'roles', 'attribute_name' => 'roles'),
+ *        array('field_name' => 'name', 'attribute_name' => 'cn'),
+ *        array('field_name' => 'mail', 'attribute_name' => 'mail'),
+ *        array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
+ *        array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
+ *        array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
+ *    ),
+ * ),
  *
  * Format of the 'attributes' array explained:
+ * - field_name - name of the Drupal field.
+ * - field_property - name of the field property. "value" by default.
+ * - attribute_name - name of the attribute to place field component value in.
  *
- * 'attributes' can be an associate array of attribute names, or NULL, in which case
- * all attributes are fetched.
- *
- * If you want everything (except) the password hash do this:
- *    'attributes' => NULL,
- *
- * If you want to pick and choose do it like this:
- * 'attributes' => array(
- *          array('drupaluservar' => 'uid',  'callit' => 'uid),
- *                     array('drupaluservar' => 'name', 'callit' => 'cn'),
- *                     array('drupaluservar' => 'mail', 'callit' => 'mail'),
- *                     array('drupaluservar' => 'roles','callit' => 'roles'),
- *                      ),
- *
- *  If you want to take another field column beside value you can declare it
- *  like this:
- * 'attributes' => array(
- *                       array('drupaluservar' => field_country:iso2','callit' => 'country'),
- *                      ),
- *
- *  The value for 'drupaluservar' is the variable name for the attribute in the
- *  Drupal user object.
- *
- *  The value for 'callit' is the name you want the attribute to have when it's
- *  returned after authentication. You can use the same value in both or you can
- *  customize by putting something different in for 'callit'. For an example,
- *  look at the entry for name above.
- *
- *
- * @author Steve Moitozo <steve_moitozo@sil.org>, SIL International
- * @package drupalauth
- * @version $Id$
+ * Leave 'attributes' empty or unset to get all available field values.
+ * Attribute names in this case would be "$field_name:$property_name".
  */
 class External extends Source
 {
 
-  /**
-   * Whether to turn on debugging
-   */
-    private $debug;
-
-  /**
-   * The Drupal installation directory
-   */
-    private $drupalroot;
-
-  /**
-   * The Drupal user attributes to use, NULL means use all available
-   */
-    private $attributes;
-
-  /**
-   * The name of the cookie
-   */
-    private $cookie_name;
-
-  /**
-   * The cookie path
-   */
-    private $cookie_path;
-
-  /**
-   * The cookie salt
-   */
-    private $cookie_salt;
-
-  /**
-   * The logout URL of the Drupal site
-   */
-    private $drupal_logout_url;
-
-  /**
-   * The login URL of the Drupal site
-   */
-    private $drupal_login_url;
+    /**
+     * Configuration object.
+     *
+     * @var \SimpleSAML\Module\drupalauth\ConfigHelper
+     */
+    private $config;
 
     /**
      * Constructor for this authentication source.
      *
-     * @param array $info  Information about this authentication source.
-     * @param array $config  Configuration.
+     * @param array $info Information about this authentication source.
+     * @param array $config Configuration.
      */
     public function __construct($info, $config)
     {
         assert('is_array($info)');
         assert('is_array($config)');
 
-    /* Call the parent constructor first, as required by the interface. */
+        /* Call the parent constructor first, as required by the interface. */
         parent::__construct($info, $config);
 
-
-    /* Get the configuration for this module */
-        $drupalAuthConfig = new sspmod_drupalauth_ConfigHelper(
+        /* Get the configuration for this module */
+        $drupalAuthConfig = new ConfigHelper(
             $config,
-            'Authentication source ' . var_export($this->authId, true)
+            'Authentication source ' . var_export($this->getAuthId(), true)
         );
 
-        $this->debug       = $drupalAuthConfig->getDebug();
-        $this->attributes  = $drupalAuthConfig->getAttributes();
-        $this->cookie_name = $drupalAuthConfig->getCookieName();
-        $this->drupal_logout_url = $drupalAuthConfig->getDrupalLogoutURL();
-        $this->drupal_login_url = $drupalAuthConfig->getDrupalLoginURL();
-
-        if (!defined('DRUPAL_ROOT')) {
-            define('DRUPAL_ROOT', $drupalAuthConfig->getDrupalroot());
-        }
-
-        $ssp_config = SimpleSAML_Configuration::getInstance();
-        $this->cookie_path = '/' . $ssp_config->getValue('baseurlpath');
-        $this->cookie_salt = $ssp_config->getValue('secretsalt');
-
-        $a = getcwd();
-        chdir(DRUPAL_ROOT);
-
-    /* Include the Drupal bootstrap */
-    //require_once(DRUPAL_ROOT.'/includes/common.inc');
-        require_once(DRUPAL_ROOT.'/includes/bootstrap.inc');
-        require_once(DRUPAL_ROOT.'/includes/file.inc');
-
-    /* Using DRUPAL_BOOTSTRAP_FULL means that SimpleSAMLphp must use an session storage
-     * mechanism other than phpsession (see: store.type in config.php). However, this trade-off
-     * prevents the need for hackery here and makes this module work better in different environments.
-     */
-        drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
-
-    // we need to be able to call Drupal user function so we load some required modules
-        drupal_load('module', 'system');
-        drupal_load('module', 'user');
-        drupal_load('module', 'field');
-
-        chdir($a);
+        $this->config = $drupalAuthConfig;
     }
 
 
@@ -210,113 +113,49 @@ class External extends Source
     private function getUser()
     {
 
-        $drupaluid          = null;
+        $drupaluid = null;
 
-    // pull the Drupal uid out of the cookie
-        if (isset($_COOKIE[$this->cookie_name]) && $_COOKIE[$this->cookie_name]) {
-            $strCookie = $_COOKIE[$this->cookie_name];
-            $arrCookie = explode(':', $strCookie);
+        // Pull the Drupal UID out of the cookie.
+        $cookie_name = $this->config->getCookieName();
+        if (isset($_COOKIE[$cookie_name]) && $_COOKIE[$cookie_name]) {
+            $strCookie = $_COOKIE[$cookie_name];
+            list($hash, $uid) = explode(':', $strCookie);
 
-          // make sure the hash matches
-          // make sure the UID is passed
-            if ((isset($arrCookie[0]) && $arrCookie[0]) && (isset($arrCookie[1]) && $arrCookie[1])) {
-            // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
-                if (sha1($this->cookie_salt . $arrCookie[1]) == $arrCookie[0]) {
-                      $drupaluid = $arrCookie[1];
-                } else {
-                      throw new Exception(
-                          'Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.'
-                      );
+            // make sure the hash matches
+            // make sure the UID is passed
+            if ((isset($hash) && !empty($hash)) && (isset($uid) && !empty($uid))) {
+                // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
+                $cookie_salt = $this->config->getCookieSalt();
+                if (sha1($cookie_salt . $uid) !== $hash) {
+                    throw new Exception(
+                        'Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.'
+                    );
                 }
+                $drupaluid = $uid;
             }
         }
 
 
-    // Delete the cookie, we don't need it anymore
-        if (isset($_COOKIE[$this->cookie_name])) {
-            setcookie($this->cookie_name, "", time() - 3600, $this->cookie_path);
+        // Delete the cookie, we don't need it anymore
+        if (isset($_COOKIE[$cookie_name])) {
+            setcookie($cookie_name, "", time() - 3600, $this->config->getCookiePath());
         }
 
         if (!empty($drupaluid)) {
-            $current_dir = getcwd();
-            chdir(DRUPAL_ROOT);
+            $drupalHelper = new DrupalHelper();
+            $drupalHelper->bootDrupal($this->config->getDrupalroot());
 
-          // load the user object from Drupal
-            $drupaluser = user_load($drupaluid, true);
-
-            chdir($current_dir);
-
-          // get all the attributes out of the user object
-            $userAttrs = get_object_vars($drupaluser);
-            $wrapper = entity_metadata_wrapper('user', $drupaluser->uid);
-
-          // define some variables to use as arrays
-            $userAttrNames = null;
-            $attributes = null;
-
-          // figure out which attributes to include
-            if (null == $this->attributes) {
-                $userKeys = array_keys($userAttrs);
-
-            // populate the attribute naming array
-                foreach ($userKeys as $userKey) {
-                      $userAttrNames[$userKey] = $userKey;
-                }
-            } else {
-          // populate the array of attribute keys
-          // populate the attribute naming array
-                foreach ($this->attributes as $confAttr) {
-                    $userKeys[] = $confAttr['drupaluservar'];
-                    $userAttrNames[$confAttr['drupaluservar']] = $confAttr['callit'];
-                }
+            // Load the user object from Drupal.
+            $drupaluser = User::load($uid);
+            if ($drupaluser->isBlocked()) {
+                throw new Error('USER_BLOCKED');
             }
 
-      // an array of the keys that should never be included
-      // (e.g., pass)
-            $skipKeys = array('pass');
+            $requested_attributes = $this->config->getAttributes();
 
-      // Package up the user attributes.
-            foreach ($userKeys as $userKey) {
-                $value = '';
-                $attributes[$userAttrNames[$userKey]] = array($value);
-
-                // Skip any keys that should never be included.
-                if (!in_array($userKey, $skipKeys)) {
-                    if (isset($userAttrs[$userKey])
-                    && (is_string($userAttrs[$userKey])
-                      || is_numeric($userAttrs[$userKey])
-                      || is_bool($userAttrs[$userKey]))
-                    ) {
-                        $attributes[$userAttrNames[$userKey]] = array($userAttrs[$userKey]);
-                    } else {
-                        // Get attributes from user fields.
-                        try {
-                            list($field_name, $col_name) = explode(':', "$userKey:");
-                    // Get value from a specific column from wrapper.
-                            if (!empty($col_name) && !in_array($col_name, array('value', 'safe_value'))) {
-                                if ($wrapper->{$field_name}->value()) {
-                                    $value = $wrapper->{$field_name}->{$col_name}->value();
-                                }
-                            } elseif ($wrapper->{$field_name}->value()) {
-                                // Default get value from wrapper.
-                                $value = $wrapper->{$field_name}->value();
-                            }
-                            $attributes[$userAttrNames[$userKey]] = is_array($value) ? $value : array($value);
-                        } catch (Exception $e) {
-                            watchdog_exception('simplesaml', $e);
-                        }
-                    }
-                }
-            }
-
-            chdir(DRUPAL_ROOT);
-            drupal_alter('drupalauth_attributes', $attributes, $drupaluser);
-            chdir($current_dir);
-
-            return $attributes;
+            return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
         }
     }
-
 
     /**
      * Log in using an external authentication helper.
@@ -325,7 +164,7 @@ class External extends Source
      */
     public function authenticate(&$state)
     {
-        assert('is_array($state)');
+        assert(is_array($state));
 
         $attributes = $this->getUser();
         if ($attributes !== null) {
@@ -348,8 +187,7 @@ class External extends Source
          * First we add the identifier of this authentication source
          * to the state array, so that we know where to resume.
          */
-        $state['drupalauth:AuthID'] = $this->authId;
-
+        $state['drupalauth:AuthID'] = $this->getAuthId();
 
         /*
          * We need to save the $state-array, so that we can resume the
@@ -367,13 +205,13 @@ class External extends Source
         $stateId = State::saveState($state, 'drupalauth:External');
 
         /*
-         * Now we generate an URL the user should return to after authentication.
+         * Now we generate a URL the user should return to after authentication.
          * We assume that whatever authentication page we send the user to has an
          * option to return the user to a specific page afterwards.
          */
-        $returnTo = Module::getModuleURL('drupalauth/resume.php', array(
+        $returnTo = Module::getModuleURL('drupalauth/resume.php', [
             'State' => $stateId,
-        ));
+        ]);
 
         /*
          * Get the URL of the authentication page.
@@ -382,7 +220,7 @@ class External extends Source
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = $this->drupal_login_url . '?ReturnTo=' . $returnTo;
+        $authPage = $this->config->getDrupalLoginURL();
 
         /*
          * The redirect to the authentication page.
@@ -390,16 +228,15 @@ class External extends Source
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        HTTP::redirectTrustedURL($authPage, array(
+        HTTP::redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
-        ));
+        ]);
 
         /*
          * The redirect function never returns, so we never get this far.
          */
-        assert('FALSE');
+        assert(false);
     }
-
 
     /**
      * Resume authentication process.
@@ -411,7 +248,6 @@ class External extends Source
      */
     public static function resume()
     {
-
         /*
          * First we need to restore the $state-array. We should have the identifier for
          * it in the 'State' request parameter.
@@ -419,13 +255,12 @@ class External extends Source
         if (!isset($_REQUEST['State'])) {
             throw new BadRequest('Missing "State" parameter.');
         }
-        $stateId = (string)$_REQUEST['State'];
 
         /*
          * Once again, note the second parameter to the loadState function. This must
          * match the string we used in the saveState-call above.
          */
-        $state = State::loadState($stateId, 'drupalauth:External');
+        $state = State::loadState($_REQUEST['State'], 'drupalauth:External');
 
         /*
          * Now we have the $state-array, and can use it to locate the authentication
@@ -437,7 +272,7 @@ class External extends Source
              * The only way this should fail is if we remove or rename the authentication source
              * while the user is at the login page.
              */
-            throw new Exception('Could not find authentication source with id ' . $state[self::AUTHID]);
+            throw new Exception('Could not find authentication source with ID: ' . $state['drupalauth:AuthID']);
         }
 
         /*
@@ -445,10 +280,9 @@ class External extends Source
          * user was at the authentication page. This can only happen if we
          * change config/authsources.php while an user is logging in.
          */
-        if (! ($source instanceof self)) {
+        if (!($source instanceof self)) {
             throw new Exception('Authentication source type changed.');
         }
-
 
         /*
          * OK, now we know that our current state is sane. Time to actually log the user in.
@@ -472,14 +306,13 @@ class External extends Source
          */
 
         $state['Attributes'] = $attributes;
-        SimpleSAML_Auth_Source::completeAuth($state);
+        Source::completeAuth($state);
 
         /*
          * The completeAuth-function never returns, so we never get this far.
          */
-        assert('FALSE');
+        assert(false);
     }
-
 
     /**
      * This function is called when the user start a logout operation, for example
@@ -489,32 +322,24 @@ class External extends Source
      */
     public function logout(&$state)
     {
-        assert('is_array($state)');
+        assert(is_array($state));
 
         if (!session_id()) {
-          /* session_start not called before. Do it here. */
+            // session_start not called before. Do it here
             session_start();
         }
 
-    /*
-     * In this example we simply remove the 'uid' from the session.
-     */
-        unset($_SESSION['uid']);
-
-    // Added armor plating, just in case
-        if (isset($_COOKIE[$this->cookie_name])) {
-            setcookie($this->cookie_name, "", time() - 3600, $this->cookie_path);
+        // Added armor plating, just in case.
+        if (isset($_COOKIE[$this->config->getCookieName()])) {
+            setcookie($this->config->getCookieName(), "", time() - 3600, $this->config->getCookiePath());
         }
 
-        $logout_url = $this->drupal_logout_url;
+        $logout_url = $this->config->getDrupalLogoutURL();
+        $parameters = [];
         if (!empty($state['ReturnTo'])) {
-            $logout_url .= '?ReturnTo=' . $state['ReturnTo'];
+            $parameters['ReturnTo'] = $state['ReturnTo'];
         }
 
-    /**
-     * Redirect the user to the Drupal logout page
-     */
-        header('Location: ' . $logout_url);
-        die;
+        HTTP::redirectTrustedURL($logout_url, $parameters);
     }
 }

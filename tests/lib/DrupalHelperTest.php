@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use SimpleSAML\Module\drupalauth\Auth\Source\UserPass;
+use SimpleSAML\Module\drupalauth\DrupalHelper;
 
-class UserPassTest extends TestCase
+class DrupalHelperTest extends TestCase
 {
 
     /**
@@ -18,9 +18,8 @@ class UserPassTest extends TestCase
 
     protected function setUp()
     {
-        $this->stub = $this->getMockBuilder(UserPass::class)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+
+        $this->stub = $this->createMock(DrupalHelper::class);
         $this->class = new \ReflectionClass($this->stub);
     }
 
@@ -200,11 +199,6 @@ class UserPassTest extends TestCase
                     'property_2_2' => 'property_2_2_1_value',
                 ],
             ],
-            'forbidden_field' => [
-                0 => [
-                    'value' => 'secret',
-                ]
-            ],
         ];
 
         return [
@@ -214,8 +208,6 @@ class UserPassTest extends TestCase
                 $field_values,
                 // Requested attributes.
                 [],
-                // Forbidden attributes.
-                ['forbidden_field'],
                 // Expected attributes.
                 [
                     'field_name:0:property_1' => ['property_1_value'],
@@ -238,8 +230,6 @@ class UserPassTest extends TestCase
                     ['field_name' => 'field_name', 'field_property' => 'property_1', 'field_index' => 1],
                     ['field_name' => 'field_name', 'field_property' => 'property_1', 'field_index' => 1, 'attribute_name' => 'someAttr'],
                 ],
-                // Forbidden attributes.
-                ['forbidden_field'],
                 // Expected attributes.
                 [
                     'field_name:property_1' => ['property_1_value'],
@@ -256,8 +246,6 @@ class UserPassTest extends TestCase
                     ['field_name' => 'field_name_2', 'field_property' => 'property_2_1', 'attribute_name' => 'someAttr'],
                     ['field_name' => 'field_name_2', 'field_property' => 'property_2_2', 'field_index' => 1],
                 ],
-                // Forbidden attributes.
-                [],
                 // Expected attributes.
                 [
                     'field_name:property_2' => ['property_2_value'],
@@ -272,14 +260,11 @@ class UserPassTest extends TestCase
     /**
      * @dataProvider getAttributesDataProvider
      */
-    public function testGetAttributes($values, $requested_attributes, $forbidden_attributes, $expected_attributes)
+    public function testGetAttributes($values, $requested_attributes, $expected_attributes)
     {
-        $method = $this->class->getMethod('getAttributes');
-        $method->setAccessible(true);
-
         $user = new User($values);
-
-        $attributes = $method->invokeArgs($this->stub, [$user, $requested_attributes, $forbidden_attributes]);
+        $dh = new DrupalHelper();
+        $attributes = $dh->getAttributes($user, $requested_attributes);
 
         $this->assertEquals($expected_attributes, $attributes, 'Expected attributes returned');
     }

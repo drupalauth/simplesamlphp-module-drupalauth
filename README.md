@@ -1,5 +1,7 @@
 ## Introduction
 
+[![Build Status](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth.svg?branch=master)](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth)
+
 Drupal + SimpleSAMLphp + drupalauth = Complete SAML Identity Provider (IdP)
 
 Users interact with Drupal to create accounts, manage accounts, and authenticate. SAML SPs interact with [SimpleSAMLphp](https://simplesamlphp.org/). Drupalauth ties Drupal to SimpleSAMLphp.
@@ -79,8 +81,6 @@ Leave 'attributes' empty or unset to get all available field values. Attribute n
 
 #### Authenticate against Drupal but use the Drupal login page
 
-**Not supported yet!!!**
-
 The advantage of this approach is that the SimpleSAMLphp IdP session is tied to a Drupal session. This allows the user who is already logged into the Drupal site to then navigate to a SAML SP that uses the IdP without the need to authenticate again.
 
 **Details**
@@ -103,14 +103,14 @@ Configure the authentication source by putting following code into `simplesamlph
  'drupal_login_url' => 'https://www.example.com/drupal/user',
 
  // Which attributes should be retrieved from the Drupal site.
- 'attributes' => array(
-   array('drupaluservar'   => 'uid',  'callit' => 'uid'),
-   array('drupaluservar' => 'name', 'callit' => 'cn'),
-   array('drupaluservar' => 'mail', 'callit' => 'mail'),
-   array('drupaluservar' => 'field_first_name',  'callit' => 'givenName'),
-   array('drupaluservar' => 'field_last_name',   'callit' => 'sn'),
-   array('drupaluservar' => 'field_organization','callit' => 'ou'),
-   array('drupaluservar' => 'roles','callit' => 'roles'),
-  ),
+    'attributes' => array(
+        array('field_name' => 'uid', 'attribute_name' => 'uid'),
+        array('field_name' => 'roles', 'attribute_name' => 'roles'), 
+        array('field_name' => 'name', 'attribute_name' => 'cn'),
+        array('field_name' => 'mail', 'attribute_name' => 'mail'),
+        array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
+        array('field_name' => 'field_last_name', 'attribute_name' => 'sn'),
+        array('field_name' => 'field_organization', 'attribute_name' => 'ou', 'field_property' => 'target_id'),
+    ),
 ),
 ```

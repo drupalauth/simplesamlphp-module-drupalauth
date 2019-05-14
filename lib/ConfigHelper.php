@@ -59,7 +59,19 @@ class ConfigHelper
     private $cookie_name;
 
 
-  /**
+    /**
+     * Cookie path.
+     */
+    private $cookie_path;
+
+
+    /**
+     * Cookie salt.
+     */
+    private $cookie_salt;
+
+
+    /**
    * The Drupal logout URL
    */
     private $drupal_logout_url;
@@ -93,13 +105,17 @@ class ConfigHelper
         $this->cookie_name = $config->getString('cookie_name', 'drupalauth4ssp');
         $this->drupal_logout_url = $config->getString('drupal_logout_url', null);
         $this->drupal_login_url = $config->getString('drupal_login_url', null);
+
+        $ssp_config = Configuration::getInstance();
+        $this->cookie_path = '/' . $ssp_config->getString('baseurlpath');
+        $this->cookie_salt = $ssp_config->getString('secretsalt');
     }
     
 
     /**
-     * Return the debug
+     * Returns debug mode.
      *
-     * @param boolean $debug whether or not debugging should be turned on
+     * @return boolean
      */
     public function getDebug()
     {
@@ -107,9 +123,9 @@ class ConfigHelper
     }
 
     /**
-     * Return the drupaldir
+     * Returns Drupal root directory.
      *
-     * @param string $drupalroot the directory of the Drupal site
+     * @return string
      */
     public function getDrupalroot()
     {
@@ -119,27 +135,47 @@ class ConfigHelper
   /**
    * Return the attributes
    *
-   * @param array $attributes the array of Drupal attributes to use, NULL means use all available attributes
+   * @return array
    */
     public function getAttributes()
     {
         return $this->attributes;
     }
 
-  /**
-   * Return the cookie name
-   *
-   * @param array $cookie_name the name of the cookie
-   */
+    /**
+     * Returns cookie name.
+     *
+     * @return string
+     */
     public function getCookieName()
     {
         return $this->cookie_name;
     }
 
-  /**
-   * Return the Drupal logout URL
+    /**
+     * Returns cookie path.
+     *
+     * @return string
+     */
+    public function getCookiePath()
+    {
+        return $this->cookie_path;
+    }
+
+    /**
+     * Returns cookie salt.
    *
-   * @param array $drupal_logout_url the URL of the Drupal logout page
+     * @return string
+     */
+    public function getCookieSalt()
+    {
+        return $this->cookie_salt;
+    }
+
+    /**
+     * Returns Drupal logout URL.
+     *
+     * @return string
    */
     public function getDrupalLogoutURL()
     {
@@ -147,9 +183,9 @@ class ConfigHelper
     }
 
   /**
-   * Return the Drupal login URL
+   * Returns Drupal login URL.
    *
-   * @param array $drupal_login_url the URL of the Drupal login page
+   * @return string
    */
     public function getDrupalLoginURL()
     {
