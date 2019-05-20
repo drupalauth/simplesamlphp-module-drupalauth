@@ -6,21 +6,6 @@ use SimpleSAML\Configuration;
 
 /**
  * Drupal authentication source configuration parser.
- *
- * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org
- *
- * This class is a Drupal authentication source which authenticates users
- * against a Drupal site located on the same server.
- *
- *
- * The homepage of this project: http://code.google.com/p/drupalauth/
- *
- * See the drupalauth-entry in config-templates/authsources.php for information about
- * configuration of these options.
- *
- * @author Steve Moitozo <steve_moitozo@sil.org>, SIL International
- * @package drupalauth
- * @version $Id$
  */
 class ConfigHelper
 {
@@ -96,7 +81,7 @@ class ConfigHelper
 
         $this->location = $location;
 
-        /* Parse configuration. */
+        /* Get authsource configuration. */
         $config = Configuration::loadFromArray($config, $location);
 
         $this->drupalroot = $config->getString('drupalroot');

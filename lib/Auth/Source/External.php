@@ -45,14 +45,17 @@ use SimpleSAML\Utils\HTTP;
  *     // Whether to turn on debug
  *     'debug' => true,
  *
- *    // URL of the Drupal logout page.
- *    'drupal_logout_url' => 'https://www.example.com/drupal7/user/logout',
+ *     // Cookie name.
+ *     'cookie_name' => 'drupalauth4ssp'
  *
- *    // URL of the Drupal login page.
- *    'drupal_login_url' => 'https://www.example.com/drupal7/user',
+ *     // URL of the Drupal logout page.
+ *     'drupal_logout_url' => 'https://www.example.com/drupal7/user/logout',
+ *
+ *     // URL of the Drupal login page.
+ *     'drupal_login_url' => 'https://www.example.com/drupal7/user',
  *
  *     // Which attributes should be retrieved from the Drupal site.
- *    'attributes' => array(
+ *     'attributes' => array(
  *        array('field_name' => 'uid', 'attribute_name' => 'uid'),
  *        array('field_name' => 'roles', 'attribute_name' => 'roles'),
  *        array('field_name' => 'name', 'attribute_name' => 'cn'),
