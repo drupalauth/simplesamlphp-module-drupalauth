@@ -3,6 +3,7 @@
 namespace SimpleSAML\Module\drupalauth;
 
 use SimpleSAML\Configuration;
+use SimpleSAML\Utils\Config;
 
 /**
  * Drupal authentication source configuration parser.
@@ -91,9 +92,8 @@ class ConfigHelper
         $this->drupal_logout_url = $config->getString('drupal_logout_url', null);
         $this->drupal_login_url = $config->getString('drupal_login_url', null);
 
-        $ssp_config = Configuration::getInstance();
-        $this->cookie_path = '/' . $ssp_config->getString('baseurlpath');
-        $this->cookie_salt = $ssp_config->getString('secretsalt');
+        $this->cookie_path = Configuration::getInstance()->getBasePath();
+        $this->cookie_salt = Config::getSecretSalt();
     }
     
 
