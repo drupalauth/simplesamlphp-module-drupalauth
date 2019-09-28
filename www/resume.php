@@ -5,8 +5,8 @@
  * process is resumed after the login page.
  *
  * It simply passes control back to the class.
- *
- * @package simpleSAMLphp
- * @version $Id$
  */
-sspmod_drupalauth_Auth_Source_External::resume();
+
+use SimpleSAML\Module\drupalauth\Auth\Source\External;
+
+External::resume();
