@@ -117,7 +117,7 @@ class External extends Source
      *
      * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
      */
-    private function getUser($throw_on_invalid_cookie = TRUE)
+    private function getUser($throw_on_invalid_cookie = true)
     {
 
         $drupaluid = null;
@@ -181,7 +181,7 @@ class External extends Source
         // SimpleSAMLphp redirect back to the SP with the exception message at
         // this point, meaning any login attempts would fail until the cookie
         // was deleted manually).
-        $attributes = $this->getUser(TRUE);
+        $attributes = $this->getUser(true);
         if ($attributes !== null) {
             /*
              * The user is already authenticated.
