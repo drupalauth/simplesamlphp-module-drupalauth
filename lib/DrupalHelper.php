@@ -19,7 +19,7 @@ class DrupalHelper
     public function bootDrupal($drupalRoot)
     {
         $autoloader = require_once $drupalRoot . '/autoload.php';
-        $request = new Request();
+        $request = Request::createFromGlobals();
         $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod', true, $drupalRoot);
         $kernel->boot();
         $kernel->loadLegacyIncludes();
