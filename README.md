@@ -100,7 +100,7 @@ Configure the authentication source by putting following code into `simplesamlph
  'drupal_logout_url' => 'https://www.example.com/drupal/user/logout',
 
  // the URL of the Drupal login page
- 'drupal_login_url' => 'https://www.example.com/drupal/user',
+ 'drupal_login_url' => 'https://www.example.com/drupal/user/login',
 
  // Which attributes should be retrieved from the Drupal site.
     'attributes' => array(
