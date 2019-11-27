@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\drupalauth\Auth\Source;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\user\Entity\User;
 use SimpleSAML\Auth\Source;
 use SimpleSAML\Auth\State;
@@ -122,14 +123,17 @@ class External extends Source
         $cookie_name = $this->config->getCookieName();
         if (isset($_COOKIE[$cookie_name]) && $_COOKIE[$cookie_name]) {
             $strCookie = $_COOKIE[$cookie_name];
-            list($hash, $uid) = explode(':', $strCookie);
+            list($cookie_hash, $uid) = explode(':', $strCookie);
 
             // make sure the hash matches
             // make sure the UID is passed
-            if ((isset($hash) && !empty($hash)) && (isset($uid) && !empty($uid))) {
+            if ((isset($cookie_hash) && !empty($cookie_hash)) && (isset($uid) && !empty($uid))) {
                 // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
-                $cookie_salt = $this->config->getCookieSalt();
-                if (sha1($cookie_salt . $uid) !== $hash) {
+                $hash = Crypt::hmacBase64(
+                    $account->id(),
+                    $this->config->getCookieSalt() . \Drupal::service('private_key')->get()
+                );
+                if (!Crypt::hashEquals($hash, $cookie_hash)) {
                     throw new Exception(
                         'Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.'
                     );
