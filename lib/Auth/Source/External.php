@@ -128,9 +128,12 @@ class External extends Source
             // make sure the hash matches
             // make sure the UID is passed
             if ((isset($cookie_hash) && !empty($cookie_hash)) && (isset($uid) && !empty($uid))) {
+                $drupalHelper = new DrupalHelper();
+                $drupalHelper->bootDrupal($this->config->getDrupalroot());
+
                 // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
                 $hash = Crypt::hmacBase64(
-                    $account->id(),
+                    $uid,
                     $this->config->getCookieSalt() . \Drupal::service('private_key')->get()
                 );
                 if (!Crypt::hashEquals($hash, $cookie_hash)) {
@@ -149,9 +152,6 @@ class External extends Source
         }
 
         if (!empty($drupaluid)) {
-            $drupalHelper = new DrupalHelper();
-            $drupalHelper->bootDrupal($this->config->getDrupalroot());
-
             // Load the user object from Drupal.
             $drupaluser = User::load($uid);
             if ($drupaluser->isBlocked()) {
