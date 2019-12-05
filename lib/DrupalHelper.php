@@ -26,9 +26,12 @@ class DrupalHelper
           'HTTP_HOST' => $current_request->getHost(),
         ];
         $request = new Request([], [], [], [], [], $server);
+        $originalDir = getcwd();
+        chdir($drupalRoot);
         $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod', true, $drupalRoot);
         $kernel->boot();
         $kernel->loadLegacyIncludes();
+        chdir($originalDir);
     }
 
     /**
