@@ -21,11 +21,12 @@ class DrupalHelper
         $autoloader = require_once $drupalRoot . '/autoload.php';
         // Inherit the current request's HTTP host to respect trusted hosts
         // settings.
-        $current_request = Request::createFromGlobals();
-        $server = [
-          'HTTP_HOST' => $current_request->getHost(),
-        ];
-        $request = new Request([], [], [], [], [], $server);
+        // $current_request = Request::createFromGlobals();
+        // $server = [
+        //   'HTTP_HOST' => $current_request->getHost(),
+        // ];
+        // $request = new Request([], [], [], [], [], $server);
+        $request = Request::createFromGlobals();;
         $originalDir = getcwd();
         chdir($drupalRoot);
         $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod', true, $drupalRoot);
