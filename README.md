@@ -31,7 +31,7 @@ So in a X.Y.Z version:
 - X - major SimpleSAMLphp version
 - Y - major Drupal version
 - Z - inthis module incremental version
-    
+
 Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this module version 1 we will have tag 1.8.1. Same thing for Drupal 7 will be 1.7.1.
 
 `master` at the moment corresponds to 1.8.*. Branch `1.7` is respectfully for Drupal 7 (not composer integration yet).
@@ -41,7 +41,7 @@ Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this mod
 ### Requirements
 
 1. Install Drupal 8.x
-2. Install simpleSAMLphp 
+2. Install simpleSAMLphp
 3. Install drupalauth
 4. Configure SimpleSAMLphp to use something other than `phpsession` for session storage, e.g., SQL or memcache (See: `store.type` in `simplesamlphp/config/config.php`).
 5. Configure the authentication source in `simplesamlphp/config/authsources.php` as described below.
@@ -58,7 +58,7 @@ Configure the authentication source by putting following code into `simplesamlph
 'drupal-userpass' => array(
     'drupalauth:UserPass',
 
-    // The filesystem path of the Drupal directory.            
+    // The filesystem path of the Drupal directory.
     'drupalroot' => '/var/www/drupal-8.0',
 
     // Whether to turn on debug
@@ -67,7 +67,7 @@ Configure the authentication source by putting following code into `simplesamlph
     // Which attributes should be retrieved from the Drupal site.
    'attributes' => array(
        array('field_name' => 'uid', 'attribute_name' => 'uid'),
-       array('field_name' => 'roles', 'attribute_name' => 'roles'), 
+       array('field_name' => 'roles', 'attribute_name' => 'roles', 'field_property' => 'target_id'),
        array('field_name' => 'name', 'attribute_name' => 'cn'),
        array('field_name' => 'mail', 'attribute_name' => 'mail'),
        array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
@@ -105,7 +105,7 @@ Configure the authentication source by putting following code into `simplesamlph
  // Which attributes should be retrieved from the Drupal site.
     'attributes' => array(
         array('field_name' => 'uid', 'attribute_name' => 'uid'),
-        array('field_name' => 'roles', 'attribute_name' => 'roles'), 
+        array('field_name' => 'roles', 'attribute_name' => 'roles', 'field_property' => 'target_id'),
         array('field_name' => 'name', 'attribute_name' => 'cn'),
         array('field_name' => 'mail', 'attribute_name' => 'mail'),
         array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),

@@ -58,7 +58,7 @@ use SimpleSAML\Utils\HTTP;
  *     // Which attributes should be retrieved from the Drupal site.
  *     'attributes' => array(
  *        array('field_name' => 'uid', 'attribute_name' => 'uid'),
- *        array('field_name' => 'roles', 'attribute_name' => 'roles'),
+ *        array('field_name' => 'roles', 'attribute_name' => 'roles', 'field_property' => 'target_id'),
  *        array('field_name' => 'name', 'attribute_name' => 'cn'),
  *        array('field_name' => 'mail', 'attribute_name' => 'mail'),
  *        array('field_name' => 'field_first_name', 'attribute_name' => 'givenName'),
