@@ -153,5 +153,7 @@ class DrupalHelper
         else {
           $autoloader = require $drupalRoot . '/autoload.php';
         }
+
+        return $autoloader;
     }
 }
