@@ -18,7 +18,7 @@ class DrupalHelper
      */
     public function bootDrupal($drupalRoot)
     {
-        $autoloader = require_once $drupalRoot . '/autoload.php';
+        $autoloader = $this->getDrupalAutoloader($drupalRoot);
         $request = Request::createFromGlobals();
         $originalDir = getcwd();
         chdir($drupalRoot);
@@ -143,5 +143,15 @@ class DrupalHelper
         }
 
         return isset($index) ? "$field_name:$index:$property_name" : "$field_name:$property_name";
+    }
+
+    private function getDrupalAutoLoader($drupalRoot) {
+        $autoloader_filename = $drupalRoot . '/autoload.php';
+        if (!in_array($autoloader_filename, get_included_files())) {
+          $autoloader = require_once $autoloader_filename;
+        }
+        else {
+          $autoloader = require $drupalRoot . '/autoload.php';
+        }
     }
 }
