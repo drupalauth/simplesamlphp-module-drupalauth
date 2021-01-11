@@ -16,7 +16,7 @@ class DrupalHelperTest extends TestCase
      */
     protected $class;
 
-    protected function setUp()
+    protected function setUp(): void
     {
 
         $this->stub = $this->createMock(DrupalHelper::class);
