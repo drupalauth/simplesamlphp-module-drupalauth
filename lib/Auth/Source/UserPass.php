@@ -115,13 +115,13 @@ class UserPass extends UserPassBase
         // Authenticate the user.
         $uid = $userAuth->authenticate($username, $password);
         if ($uid === false) {
-            throw new Error('WRONG_USER_PASS');
+            throw new Error('WRONGUSERPASS');
         }
 
         // Load the user object from Drupal.
         $drupaluser = User::load($uid);
         if ($drupaluser->isBlocked()) {
-            throw new Error('USER_BLOCKED');
+            throw new Error('NOACCESS');
         }
 
         $requested_attributes = $this->config->getAttributes();
