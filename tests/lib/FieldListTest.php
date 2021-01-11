@@ -11,11 +11,9 @@ use PHPUnit\Framework\TestCase;
 class FieldListTest extends TestCase
 {
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGetException()
     {
+        $this->expectException(InvalidArgumentException::class);
         $field = new FieldList();
         $field->get('sdfkjskljdf');
     }
@@ -27,32 +25,26 @@ class FieldListTest extends TestCase
         $this->assertEquals(null, $field->get(1), 'Null returned for the empty index.');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Unable to set a value with a non-numeric delta in a list.
-     */
     public function testSetIndexException()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to set a value with a non-numeric delta in a list.');
         $field = new FieldList();
         $field->set('bad_index', 'something');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Properties must be an array.
-     */
     public function testSetBadPropertiesException()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Properties must be an array.');
         $field = new FieldList();
         $field->set(0, 'something');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Unable to set a value of a property with a non string name.
-     */
-    public function testSetBadPropertyNmaeException()
+    public function testSetBadPropertyNameException()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to set a value of a property with a non string name.');
         $field = new FieldList();
         $field->set(0, ['value']);
     }
