@@ -136,7 +136,7 @@ class External extends Source
                     $uid,
                     $this->config->getCookieSalt() . \Drupal::service('private_key')->get()
                 );
-                if (!hash_equals($hash, $cookie_hash)) { 
+                if (!hash_equals($hash, $cookie_hash)) {
                     throw new Exception(
                         'Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.'
                     );
