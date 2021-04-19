@@ -154,6 +154,15 @@ class External extends Source
         if (!empty($drupaluid)) {
             // Load the user object from Drupal.
             $drupaluser = User::load($uid);
+            
+            if (!empty($allowed_roles = \Drupal::state()->get('drupalauth.allowed_roles'))) {
+              $roles = $drupaluser->getRoles();
+              $allowed = array_intersect($roles, $allowed_roles);
+              if (empty($allowed)) {
+                HTTP::redirectTrustedURL('/');
+              }
+            }
+            
             if ($drupaluser->isBlocked()) {
                 throw new Error('NOACCESS');
             }
