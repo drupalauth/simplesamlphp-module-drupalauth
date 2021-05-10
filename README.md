@@ -64,6 +64,11 @@ Configure the authentication source by putting following code into `simplesamlph
     // Whether to turn on debug
     'debug' => true,
 
+    // Cookie name. Set this to use a cache-busting cookie pattern
+    // (e.g. 'SESSdrupalauth4ssp') if hosted on Pantheon so that the cookie
+    // is is not stripped away by Varnish. See https://pantheon.io/docs/cookies#cache-busting-cookies .
+    'cookie_name' => 'drupalauth4ssp',
+
     // Which attributes should be retrieved from the Drupal site.
    'attributes' => array(
        array('field_name' => 'uid', 'attribute_name' => 'uid'),
@@ -95,6 +100,11 @@ Configure the authentication source by putting following code into `simplesamlph
 
  // Whether to turn on debug
  'debug' => true,
+
+ // Cookie name. Set this to use a cache-busting cookie pattern
+ // (e.g. 'SESSdrupalauth4ssp') if hosted on Pantheon so that the cookie
+ // is is not stripped away by Varnish. See https://pantheon.io/docs/cookies#cache-busting-cookies .
+ 'cookie_name' => 'drupalauth4ssp',
 
  // the URL of the Drupal logout page
  'drupal_logout_url' => 'https://www.example.com/drupal/user/logout',
