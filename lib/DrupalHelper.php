@@ -18,7 +18,7 @@ class DrupalHelper
      */
     public function bootDrupal($drupalRoot)
     {
-        $autoloader = require_once $drupalRoot . '/autoload.php';
+        $autoloader = require $drupalRoot . '/autoload.php';
         $request = Request::createFromGlobals();
         $originalDir = getcwd();
         chdir($drupalRoot);
