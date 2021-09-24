@@ -28,7 +28,7 @@ If applicable, add screenshots to help explain your problem.
 - PHP version in use
 - Drupal core version
 - SimpleSAMLphp version
-- webserver version
+- webserver version and configuration
 
 **Additional context**
 Add any other context about the problem here.
