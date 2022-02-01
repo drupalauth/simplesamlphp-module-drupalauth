@@ -46,9 +46,6 @@ use SimpleSAML\Utils\HTTP;
  *     // Whether to turn on debug
  *     'debug' => true,
  *
- *     // Cookie name.
- *     'cookie_name' => 'drupalauth4ssp'
- *
  *     // URL of the Drupal logout page.
  *     'drupal_logout_url' => 'https://www.example.com/drupal7/user/logout',
  *
@@ -78,7 +75,22 @@ use SimpleSAML\Utils\HTTP;
 class External extends Source
 {
 
-    /**
+  /**
+   * The string used to identify Drupal user ID.
+   */
+    const DRUPALAUTH_EXTERNAL_USER_ID = 'drupalauth:External:UserID';
+
+  /**
+   * The string used to identify authentication source.
+   */
+    const DRUPALAUTH_AUTH_ID = 'drupalauth:AuthID';
+
+  /**
+   * The string used to identify our states.
+   */
+    const DRUPALAUTH_EXTERNAL = 'drupalauth:External';
+
+  /**
      * Configuration object.
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
@@ -114,46 +126,14 @@ class External extends Source
      *
      * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
      */
-    private function getUser()
+    private function getUser($drupaluid)
     {
-
-        $drupaluid = null;
-
-        // Pull the Drupal UID out of the cookie.
-        $cookie_name = $this->config->getCookieName();
-        if (isset($_COOKIE[$cookie_name]) && $_COOKIE[$cookie_name]) {
-            $strCookie = $_COOKIE[$cookie_name];
-            list($cookie_hash, $uid) = explode(':', $strCookie);
-
-            // make sure the hash matches
-            // make sure the UID is passed
-            if ((isset($cookie_hash) && !empty($cookie_hash)) && (isset($uid) && !empty($uid))) {
-                $drupalHelper = new DrupalHelper();
-                $drupalHelper->bootDrupal($this->config->getDrupalroot());
-
-                // Make sure no one manipulated the hash or the uid in the cookie before we trust the uid
-                $hash = Crypt::hmacBase64(
-                    $uid,
-                    $this->config->getCookieSalt() . \Drupal::service('private_key')->get()
-                );
-                if (!hash_equals($hash, $cookie_hash)) {
-                    throw new Exception(
-                        'Cookie hash invalid. This indicates either tampering or an out of date drupal4ssp module.'
-                    );
-                }
-                $drupaluid = $uid;
-            }
-        }
-
-
-        // Delete the cookie, we don't need it anymore
-        if (isset($_COOKIE[$cookie_name])) {
-            setcookie($cookie_name, "", time() - 3600, $this->config->getCookiePath());
-        }
-
         if (!empty($drupaluid)) {
-            // Load the user object from Drupal.
-            $drupaluser = User::load($uid);
+            $drupalHelper = new DrupalHelper();
+            $drupalHelper->bootDrupal($this->config->getDrupalroot());
+
+          // Load the user object from Drupal.
+            $drupaluser = User::load($drupaluid);
             if ($drupaluser->isBlocked()) {
                 throw new Error('NOACCESS');
             }
@@ -173,7 +153,7 @@ class External extends Source
     {
         assert(is_array($state));
 
-        $attributes = $this->getUser();
+        $attributes = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
         if ($attributes !== null) {
             /*
              * The user is already authenticated.
@@ -194,7 +174,7 @@ class External extends Source
          * First we add the identifier of this authentication source
          * to the state array, so that we know where to resume.
          */
-        $state['drupalauth:AuthID'] = $this->getAuthId();
+        $state[self::DRUPALAUTH_AUTH_ID] = $this->getAuthId();
 
         /*
          * We need to save the $state-array, so that we can resume the
@@ -209,7 +189,7 @@ class External extends Source
          * and restores it in another location, and thus bypasses steps in
          * the authentication process.
          */
-        $stateId = State::saveState($state, 'drupalauth:External');
+        $stateId = State::saveState($state, self::DRUPALAUTH_EXTERNAL);
 
         /*
          * Now we generate a URL the user should return to after authentication.
@@ -253,13 +233,13 @@ class External extends Source
      *
      * @param array &$state  The authentication state.
      */
-    public static function resume()
+    public static function resume($stateID)
     {
         /*
          * First we need to restore the $state-array. We should have the identifier for
          * it in the 'State' request parameter.
          */
-        if (!isset($_REQUEST['State'])) {
+        if (!isset($stateID)) {
             throw new BadRequest('Missing "State" parameter.');
         }
 
@@ -267,19 +247,19 @@ class External extends Source
          * Once again, note the second parameter to the loadState function. This must
          * match the string we used in the saveState-call above.
          */
-        $state = State::loadState($_REQUEST['State'], 'drupalauth:External');
+        $state = State::loadState($stateID, self::DRUPALAUTH_EXTERNAL);
 
         /*
          * Now we have the $state-array, and can use it to locate the authentication
          * source.
          */
-        $source = Source::getById($state['drupalauth:AuthID']);
+        $source = Source::getById($state[self::DRUPALAUTH_AUTH_ID]);
         if ($source === null) {
             /*
              * The only way this should fail is if we remove or rename the authentication source
              * while the user is at the login page.
              */
-            throw new Exception('Could not find authentication source with ID: ' . $state['drupalauth:AuthID']);
+            throw new Exception('Could not find authentication source with ID: ' . $state[self::DRUPALAUTH_AUTH_ID]);
         }
 
         /*
@@ -291,12 +271,12 @@ class External extends Source
             throw new Exception('Authentication source type changed.');
         }
 
-        /*
-         * OK, now we know that our current state is sane. Time to actually log the user in.
-         *
-         * First we check that the user is acutally logged in, and didn't simply skip the login page.
-         */
-        $attributes = $source->getUser();
+      /*
+       * OK, now we know that our current state is sane. Time to actually log the user in.
+       *
+       * First we check that the user is acutally logged in, and didn't simply skip the login page.
+       */
+        $attributes = $source->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
         if ($attributes === null) {
             /*
              * The user isn't authenticated.
@@ -334,11 +314,6 @@ class External extends Source
         if (!session_id()) {
             // session_start not called before. Do it here
             session_start();
-        }
-
-        // Added armor plating, just in case.
-        if (isset($_COOKIE[$this->config->getCookieName()])) {
-            setcookie($this->config->getCookieName(), "", time() - 3600, $this->config->getCookiePath());
         }
 
         $logout_url = $this->config->getDrupalLogoutURL();
