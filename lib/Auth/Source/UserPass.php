@@ -109,6 +109,19 @@ class UserPass extends UserPassBase
         $drupalHelper = new DrupalHelper();
         $drupalHelper->bootDrupal($this->config->getDrupalroot());
 
+        // support login by mail 
+        $users = \Drupal::entityTypeManager()->getStorage('user')
+            ->loadByProperties(['name' => $username]);
+        $user = $users ? reset($users) : FALSE;
+        if(!$user) {
+            // user was not found, assume mail was entered instead username 
+            $users = \Drupal::entityTypeManager()->getStorage('user')
+                ->loadByProperties(['mail' => $username]);
+            if($user = $users ? reset($users) : FALSE){
+                $username = $user->getDisplayName();
+            }
+        }
+
         /* @value \Drupal\user\UserAuth $userAuth */
         $userAuth = \Drupal::service('user.auth');
 
