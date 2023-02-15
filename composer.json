@@ -21,8 +21,8 @@
     }
   ],
   "require": {
-    "php": "^5.6.0|^7.0|^8.0",
-    "simplesamlphp/simplesamlphp": "~1.0",
+    "php": "^5.6.0|^7.0|^8.0|^8.1",
+    "simplesamlphp/simplesamlphp": "~1.0|~2.0",
     "simplesamlphp/composer-module-installer": "~1.0"
   },
   "require-dev": {
