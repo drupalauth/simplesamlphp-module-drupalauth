@@ -22,7 +22,7 @@
   ],
   "require": {
     "php": "^5.6.0|^7.0|^8.0|^8.1",
-    "simplesamlphp/simplesamlphp": "~1.0|~2.0.2|dev-master",
+    "simplesamlphp/simplesamlphp": "~1.0|~2.0.3|dev-master",
     "simplesamlphp/composer-module-installer": "~1.0"
   },
   "require-dev": {
