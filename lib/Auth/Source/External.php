@@ -13,6 +13,8 @@ use SimpleSAML\Module;
 use SimpleSAML\Module\drupalauth\ConfigHelper;
 use SimpleSAML\Module\drupalauth\DrupalHelper;
 use SimpleSAML\Utils\HTTP;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Drupal authentication source for SimpleSAMLphp using Drupal's login page.
@@ -169,7 +171,7 @@ class External extends Source
      *
      * @param array &$state  Information about the current authentication.
      */
-    public function authenticate(array &$state): void
+    public function authenticate(Request $request, array &$state): ?Response
     {
         assert(is_array($state));
 
@@ -182,7 +184,7 @@ class External extends Source
              * to the authentication process.
              */
             $state['Attributes'] = $attributes;
-            return;
+            return null;
         }
 
         /*
@@ -236,14 +238,9 @@ class External extends Source
          * the real name of the parameter for the login page.
          */
         $http_utils = new HTTP();
-        $http_utils->redirectTrustedURL($authPage, [
+        return $http_utils->redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
         ]);
-
-        /*
-         * The redirect function never returns, so we never get this far.
-         */
-        assert(false);
     }
 
     /**
@@ -328,7 +325,7 @@ class External extends Source
      *
      * @param array &$state  The logout state array.
      */
-    public function logout(array &$state): void
+    public function logout(array &$state): ?Response
     {
         assert(is_array($state));
 
@@ -349,6 +346,6 @@ class External extends Source
         }
 
         $http_utils = new HTTP();
-        $http_utils->redirectTrustedURL($logout_url, $parameters);
+        return $http_utils->redirectTrustedURL($logout_url, $parameters);
     }
 }
