@@ -171,7 +171,7 @@ class External extends Source
      *
      * @param array &$state  Information about the current authentication.
      */
-    public function authenticate(Request $request, array &$state): ?Response
+    public function authenticate(array &$state): void
     {
         assert(is_array($state));
 
@@ -184,7 +184,7 @@ class External extends Source
              * to the authentication process.
              */
             $state['Attributes'] = $attributes;
-            return null;
+            return;
         }
 
         /*
@@ -238,7 +238,7 @@ class External extends Source
          * the real name of the parameter for the login page.
          */
         $http_utils = new HTTP();
-        return $http_utils->redirectTrustedURL($authPage, [
+        $http_utils->redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
         ]);
     }
@@ -325,7 +325,7 @@ class External extends Source
      *
      * @param array &$state  The logout state array.
      */
-    public function logout(array &$state): ?Response
+    public function logout(array &$state): void
     {
         assert(is_array($state));
 
@@ -346,6 +346,6 @@ class External extends Source
         }
 
         $http_utils = new HTTP();
-        return $http_utils->redirectTrustedURL($logout_url, $parameters);
+        $http_utils->redirectTrustedURL($logout_url, $parameters);
     }
 }
