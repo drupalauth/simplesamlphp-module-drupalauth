@@ -131,3 +131,24 @@ Configure the authentication source by putting following code into `simplesamlph
     ),
 ),
 ```
+in composer.json add these repos:
+{
+"name": "drupal/drupalauth4ssp",
+"type": "git",
+"url": "https://git.drupalcode.org/issue/drupalauth4ssp-3287081.git"
+},
+{
+"name": "drupalauth/simplesamlphp-module-drupalauth",
+"type": "git",
+"url": "https://github.com/csingletwd/simplesamlphp-module-drupalauth.git"
+},
+
+
+and require section looks like this:
+
+        "drupal/drupalauth4ssp": "dev-3287081-automated-drupal-10",
+        "drupal/memcache": "^2.5",
+        "drupal/simplesamlphp_auth": "4.x-dev@dev",
+        "drupalauth/simplesamlphp-module-drupalauth": "1.9.x-dev",
+        "drush/drush": "^12.x-dev",
+        "simplesamlphp/simplesamlphp": "dev-simplesamlphp-2.1"

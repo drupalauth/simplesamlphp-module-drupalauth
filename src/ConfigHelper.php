@@ -93,7 +93,8 @@ class ConfigHelper
         $this->drupal_login_url = $config->getString('drupal_login_url', null);
 
         $this->cookie_path = Configuration::getInstance()->getBasePath();
-        $this->cookie_salt = Config::getSecretSalt();
+        $config_utils = new Config();
+        $this->cookie_salt = $config_utils->getSecretSalt();
     }
 
 
