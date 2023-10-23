@@ -184,7 +184,6 @@ class External extends Source
              * to the authentication process.
              */
             $state['Attributes'] = $attributes;
-            return;
         }
 
         /*
