@@ -1,0 +1,6 @@
+exampleauth-resume:
+  path: /resume.php
+  defaults: {
+    _controller: 'SimpleSAML\Module\drupalauth\Controller\ResumeController::resume'
+  }
+  methods: [GET]
