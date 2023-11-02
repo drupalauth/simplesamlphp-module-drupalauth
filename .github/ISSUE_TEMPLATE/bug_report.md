@@ -29,6 +29,9 @@ If applicable, add screenshots to help explain your problem.
 - Drupal core version
 - SimpleSAMLphp version
 - webserver version and configuration
+- drupalauth/simplesamlphp-module-drupalauth version
+- authentication source plugin used
+- drupalauth4ssp module version, if used
 
 **Additional context**
 Add any other context about the problem here.
