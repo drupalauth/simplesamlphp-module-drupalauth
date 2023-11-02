@@ -1,6 +1,6 @@
 ## Introduction
 
-[![Build Status](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth.svg?branch=master)](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth)
+[![Build Status](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth.svg?branch=main)](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth)
 
 Drupal + SimpleSAMLphp + drupalauth = Complete SAML Identity Provider (IdP)
 
@@ -32,9 +32,10 @@ So in a X.Y.Z version:
 - Y - major Drupal version
 - Z - inthis module incremental version
 
-Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this module version 1 we will have tag 1.8.1. Same thing for Drupal 7 will be 1.7.1.
+Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this module version 1 we will have tag 1.8.1.
+Same thing for Drupal 7 will be 1.7.1.
 
-`master` at the moment corresponds to 1.8.*. Branch `1.7` is respectfully for Drupal 7 (not composer integration yet).
+`main` at the moment corresponds to `2.10.*`. Branch `1.7` is respectfully for Drupal 7 (no Composer integration).
 
 ## Note on Drupal configuration
 
