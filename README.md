@@ -48,9 +48,9 @@ See this issue <https://github.com/drupalauth/simplesamlphp-module-drupalauth/is
 
 ### Requirements
 
-1. Install Drupal 8.x
+1. Install Drupal 10.x
 2. Install simpleSAMLphp
-3. Install drupalauth
+3. Install drupalauth - `composer require drupalauth/simplesamlphp-module-drupalauth`
 4. Configure SimpleSAMLphp to use something other than `phpsession` for session storage, e.g., SQL or memcache (See: `store.type` in `simplesamlphp/config/config.php`).
 5. Configure the authentication source in `simplesamlphp/config/authsources.php` as described below.
 
@@ -67,7 +67,7 @@ Configure the authentication source by putting following code into `simplesamlph
     'drupalauth:UserPass',
 
     // The filesystem path of the Drupal directory.
-    'drupalroot' => '/var/www/drupal-8.0',
+    'drupalroot' => '/var/www/drupal',
 
     // Whether to turn on debug
     'debug' => true,
