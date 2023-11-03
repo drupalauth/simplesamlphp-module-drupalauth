@@ -30,7 +30,7 @@
     "squizlabs/php_codesniffer": "^2.0.0|^3.0.0"
   },
   "autoload-dev": {
-    "classmap": ["lib/", "tests/lib/"]
+    "classmap": ["src/", "tests/lib/"]
   },
   "extra": {
     "branch-alias": {
