@@ -62,7 +62,7 @@ class UserPass extends UserPassBase
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
      */
-    private $config;
+    private ConfigHelper $config;
 
     /**
      * Constructor for this authentication source.
@@ -70,7 +70,7 @@ class UserPass extends UserPassBase
      * @param array $info Information about this authentication source.
      * @param array $config Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
         assert(is_array($info));
         assert(is_array($config));
@@ -101,7 +101,7 @@ class UserPass extends UserPassBase
      * @param string $password The password the user wrote.
      * @return array  Associative array with the users attributes.
      */
-    protected function login($username, $password)
+    protected function login(string $username, string $password): array
     {
         assert(is_string($username));
         assert(is_string($password));

@@ -14,7 +14,7 @@ class DrupalHelperTest extends TestCase
     /**
      * @var ReflectionClass
      */
-    protected $class;
+    protected ReflectionClass $class;
 
     protected function setUp(): void
     {
@@ -24,7 +24,7 @@ class DrupalHelperTest extends TestCase
     }
 
 
-    public function getPropertyNameProvider()
+    public function getPropertyNameProvider(): array
     {
         return [
             [[], 'value'],
@@ -46,7 +46,7 @@ class DrupalHelperTest extends TestCase
     }
 
 
-    public function getAttributeNameProvider()
+    public function getAttributeNameProvider(): array
     {
         return [
             [['field_name' => 'some_field'], 'some_field:value'],
@@ -73,7 +73,7 @@ class DrupalHelperTest extends TestCase
         $this->assertEquals($expected_attribute_name, $attribute_name, 'Expected attribute name returned');
     }
 
-    public function getAllAttributesDataProvider()
+    public function getAllAttributesDataProvider(): array
     {
         return [
             // Set #0.
@@ -180,7 +180,7 @@ class DrupalHelperTest extends TestCase
         $this->assertEquals($expected_attributes, $attributes, 'Expected attributes returned');
     }
 
-    public function getAttributesDataProvider()
+    public function getAttributesDataProvider(): array
     {
         $field_values = [
             'field_name' => [

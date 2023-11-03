@@ -3,7 +3,6 @@
 namespace SimpleSAML\Module\drupalauth;
 
 use SimpleSAML\Configuration;
-use SimpleSAML\Utils\Config;
 
 /**
  * Drupal authentication source configuration parser.
@@ -16,13 +15,13 @@ class ConfigHelper
      * String with the location of this configuration.
      * Used for error reporting.
      */
-    private $location;
+    private string $location;
 
 
     /**
      * The filesystem path to the Drupal directory
      */
-    private $drupalroot;
+    private string $drupalroot;
 
 
     /**
@@ -30,25 +29,25 @@ class ConfigHelper
      *
      * @var bool
      */
-    private $debug;
+    private bool $debug;
 
 
   /**
    * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
    */
-    private $attributes;
+    private ?array $attributes;
 
 
     /**
    * The Drupal logout URL
    */
-    private $drupal_logout_url;
+    private string $drupal_logout_url;
 
 
   /**
    * The Drupal login URL
    */
-    private $drupal_login_url;
+    private string $drupal_login_url;
 
 
     /**
@@ -57,7 +56,7 @@ class ConfigHelper
      * @param array $config  Configuration.
      * @param string $location  The location of this configuration. Used for error reporting.
      */
-    public function __construct($config, $location) {
+    public function __construct(array $config, string $location) {
       assert(is_array($config));
       assert(is_string($location));
 
@@ -66,19 +65,19 @@ class ConfigHelper
       /* Get authsource configuration. */
       $config = Configuration::loadFromArray($config, $location);
 
-      $this->drupalroot = $config->getString('drupalroot');
-      $this->debug = $config->getBoolean('debug', FALSE);
-      $this->attributes = $config->getArray('attributes', []);
-      $this->drupal_logout_url = $config->getString('drupal_logout_url', NULL);
-      $this->drupal_login_url = $config->getString('drupal_login_url', NULL);
+        $this->drupalroot = $config->getString('drupalroot');
+        $this->debug = $config->getOptionalBoolean('debug', false);
+        $this->attributes = $config->getOptionalArray('attributes', null);
+        $this->drupal_logout_url = $config->getString('drupal_logout_url');
+        $this->drupal_login_url = $config->getString('drupal_login_url');
     }
 
     /**
      * Returns debug mode.
      *
-     * @return boolean
+     * @return bool
      */
-    public function getDebug()
+    public function getDebug(): bool
     {
         return $this->debug;
     }
@@ -88,7 +87,7 @@ class ConfigHelper
      *
      * @return string
      */
-    public function getDrupalroot()
+    public function getDrupalroot(): string
     {
         return $this->drupalroot;
     }
@@ -98,7 +97,7 @@ class ConfigHelper
    *
    * @return array
    */
-    public function getAttributes()
+    public function getAttributes(): ?array
     {
         return $this->attributes;
     }
@@ -109,7 +108,7 @@ class ConfigHelper
      *
      * @return string
    */
-    public function getDrupalLogoutURL()
+    public function getDrupalLogoutURL(): string
     {
         return $this->drupal_logout_url;
     }
@@ -119,7 +118,7 @@ class ConfigHelper
    *
    * @return string
    */
-    public function getDrupalLoginURL()
+    public function getDrupalLoginURL(): string
     {
         return $this->drupal_login_url;
     }

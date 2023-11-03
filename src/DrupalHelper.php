@@ -8,15 +8,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DrupalHelper
 {
-
-    private $forbiddenAttributes = ['pass', 'status'];
+    private array $forbiddenAttributes = ['pass', 'status'];
 
     /**
      * Boot Drupal.
      *
      * @param string $drupalRoot Path to Drupal root.
      */
-    public function bootDrupal($drupalRoot)
+    public function bootDrupal(string $drupalRoot)
     {
         $autoloader = require_once $drupalRoot . '/autoload.php';
         $request = Request::createFromGlobals();
@@ -34,7 +33,7 @@ class DrupalHelper
      * @param $forbiddenAttributes
      * @return array
      */
-    public function getAttributes($drupaluser, $requested_attributes)
+    public function getAttributes($drupaluser, $requested_attributes): array
     {
         $attributes = [];
         $forbiddenAttributes = $this->forbiddenAttributes;
@@ -89,7 +88,7 @@ class DrupalHelper
      * @param $forbiddenAttributes
      * @return array
      */
-    protected function getAllAttributes($drupaluser, $forbiddenAttributes)
+    protected function getAllAttributes($drupaluser, $forbiddenAttributes): array
     {
         $attributes = [];
         foreach ($drupaluser as $field_name => $field) {

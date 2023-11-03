@@ -95,7 +95,7 @@ class External extends Source
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
      */
-    private $config;
+    private ConfigHelper $config;
 
     /**
      * Constructor for this authentication source.
@@ -103,7 +103,7 @@ class External extends Source
      * @param array $info Information about this authentication source.
      * @param array $config Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
         assert(is_array($info));
         assert(is_array($config));
@@ -126,7 +126,7 @@ class External extends Source
      *
      * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
      */
-    private function getUser($drupaluid)
+    private function getUser($drupaluid): ?array
     {
         if (!empty($drupaluid)) {
             $drupalHelper = new DrupalHelper();
@@ -149,7 +149,7 @@ class External extends Source
      *
      * @param array &$state  Information about the current authentication.
      */
-    public function authenticate(&$state)
+    public function authenticate(array &$state): void
     {
         assert(is_array($state));
 
@@ -311,7 +311,7 @@ class External extends Source
      *
      * @param array &$state  The logout state array.
      */
-    public function logout(&$state)
+    public function logout(array &$state): void
     {
         assert(is_array($state));
 

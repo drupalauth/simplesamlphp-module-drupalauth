@@ -8,7 +8,7 @@
 
 class FieldList
 {
-    protected $list = [];
+    protected array $list = [];
 
     public function get($index)
     {
@@ -16,7 +16,7 @@ class FieldList
             throw new \InvalidArgumentException('Unable to get a value with a non-numeric delta in a list.');
         }
 
-        return isset($this->list[$index]) ? $this->list[$index] : null;
+        return $this->list[$index] ?? null;
     }
 
     public function set($index, $properties)
