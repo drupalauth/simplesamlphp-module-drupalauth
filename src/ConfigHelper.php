@@ -9,8 +9,6 @@ use SimpleSAML\Configuration;
  */
 class ConfigHelper
 {
-
-
     /**
      * String with the location of this configuration.
      * Used for error reporting.
@@ -56,14 +54,15 @@ class ConfigHelper
      * @param array $config  Configuration.
      * @param string $location  The location of this configuration. Used for error reporting.
      */
-    public function __construct(array $config, string $location) {
-      assert(is_array($config));
-      assert(is_string($location));
+    public function __construct(array $config, string $location)
+    {
+        assert(is_array($config));
+        assert(is_string($location));
 
-      $this->location = $location;
+        $this->location = $location;
 
       /* Get authsource configuration. */
-      $config = Configuration::loadFromArray($config, $location);
+        $config = Configuration::loadFromArray($config, $location);
 
         $this->drupalroot = $config->getString('drupalroot');
         $this->debug = $config->getOptionalBoolean('debug', false);

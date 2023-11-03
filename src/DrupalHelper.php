@@ -1,6 +1,5 @@
 <?php
 
-
 namespace SimpleSAML\Module\drupalauth;
 
 use Drupal\Core\DrupalKernel;

@@ -74,23 +74,22 @@ use SimpleSAML\Utils\HTTP;
  */
 class External extends Source
 {
+    /**
+     * The string used to identify Drupal user ID.
+     */
+    public const DRUPALAUTH_EXTERNAL_USER_ID = 'drupalauth:External:UserID';
 
-  /**
-   * The string used to identify Drupal user ID.
-   */
-    const DRUPALAUTH_EXTERNAL_USER_ID = 'drupalauth:External:UserID';
+    /**
+     * The string used to identify authentication source.
+     */
+    public const DRUPALAUTH_AUTH_ID = 'drupalauth:AuthID';
 
-  /**
-   * The string used to identify authentication source.
-   */
-    const DRUPALAUTH_AUTH_ID = 'drupalauth:AuthID';
+    /**
+     * The string used to identify our states.
+     */
+    public const DRUPALAUTH_EXTERNAL = 'drupalauth:External';
 
-  /**
-   * The string used to identify our states.
-   */
-    const DRUPALAUTH_EXTERNAL = 'drupalauth:External';
-
-  /**
+    /**
      * Configuration object.
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
@@ -120,11 +119,11 @@ class External extends Source
         $this->config = $drupalAuthConfig;
     }
 
-
     /**
      * Retrieve attributes for the user.
      *
-     * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
+     * @return array|NULL  The user's attributes, or NULL if the user isn't
+     *     authenticated.
      */
     private function getUser($drupaluid): ?array
     {
@@ -132,7 +131,7 @@ class External extends Source
             $drupalHelper = new DrupalHelper();
             $drupalHelper->bootDrupal($this->config->getDrupalroot());
 
-          // Load the user object from Drupal.
+            // Load the user object from Drupal.
             $drupaluser = User::load($drupaluid);
             if ($drupaluser->isBlocked()) {
                 throw new Error('NOACCESS');
@@ -142,26 +141,28 @@ class External extends Source
 
             return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
         }
+
+        return null;
     }
 
     /**
      * Log in using an external authentication helper.
      *
-     * @param array &$state  Information about the current authentication.
+     * @param array &$state Information about the current authentication.
      */
     public function authenticate(array &$state): void
     {
         assert(is_array($state));
 
-      /*
+        /*
          * The user is already authenticated.
          *
          * Add the users attributes to the $state-array, and return control
          * to the authentication process.
          */
-      if (!empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
-          $state['Attributes'] = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
-          return;
+        if (!empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
+            $state['Attributes'] = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
+            return;
         }
 
         /*
@@ -230,7 +231,7 @@ class External extends Source
      * This function resumes the authentication process after the user has
      * entered his or her credentials.
      *
-     * @param array &$state  The authentication state.
+     * @param array &$state The authentication state.
      */
     public static function resume($stateID)
     {
@@ -274,7 +275,7 @@ class External extends Source
          * First we check that the user is acutally logged in, and didn't simply skip the login page.
          */
         if (empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
-          throw new Exception('User ID is missing.');
+            throw new Exception('User ID is missing.');
         }
 
         /*
@@ -306,10 +307,10 @@ class External extends Source
     }
 
     /**
-     * This function is called when the user start a logout operation, for example
-     * by logging out of a SP that supports single logout.
+     * This function is called when the user start a logout operation, for
+     * example by logging out of a SP that supports single logout.
      *
-     * @param array &$state  The logout state array.
+     * @param array &$state The logout state array.
      */
     public function logout(array &$state): void
     {

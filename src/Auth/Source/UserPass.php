@@ -56,7 +56,6 @@ use SimpleSAML\Module\drupalauth\DrupalHelper;
  */
 class UserPass extends UserPassBase
 {
-
     /**
      * Configuration object.
      *
@@ -91,14 +90,16 @@ class UserPass extends UserPassBase
     /**
      * Attempt to log in using the given username and password.
      *
-     * On a successful login, this function should return the users attributes. On failure,
-     * it should throw an exception. If the error was caused by the user entering the wrong
-     * username or password, a SimpleSAML_Error_Error('WRONGUSERPASS') should be thrown.
+     * On a successful login, this function should return the users attributes.
+     * On failure, it should throw an exception. If the error was caused by the
+     * user entering the wrong username or password, a
+     * SimpleSAML_Error_Error('WRONGUSERPASS') should be thrown.
      *
      * Note that both the username and the password are UTF-8 encoded.
      *
      * @param string $username The username the user wrote.
      * @param string $password The password the user wrote.
+     *
      * @return array  Associative array with the users attributes.
      */
     protected function login(string $username, string $password): array
