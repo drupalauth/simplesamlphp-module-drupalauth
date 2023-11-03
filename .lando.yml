@@ -1,11 +1,6 @@
 name: drupalauth
 
 services:
-  php74:
-    type: php:7.4
-    via: cli
-    xdebug: "off"
-    composer_version: 2
   php80:
     type: php:8.0
     via: cli
@@ -34,7 +29,7 @@ tooling:
     service: :service
     options:
       service:
-        default: php74
+        default: php80
         describe: Run phpcs in different service
         alias:
           - s
@@ -43,7 +38,7 @@ tooling:
     service: :service
     options:
       service:
-        default: php74
+        default: php80
         describe: Run phpcs in different service
         alias:
           - s
@@ -52,7 +47,7 @@ tooling:
     service: :service
     options:
       service:
-        default: php74
+        default: php80
         describe: Run phpunit in different service
         alias:
           - s
