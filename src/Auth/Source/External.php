@@ -215,7 +215,8 @@ class External extends Source
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        HTTP::redirectTrustedURL($authPage, [
+        $HTTP = new HTTP();
+        $HTTP->redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
         ]);
 
@@ -327,6 +328,7 @@ class External extends Source
             $parameters['ReturnTo'] = $state['ReturnTo'];
         }
 
-        HTTP::redirectTrustedURL($logout_url, $parameters);
+        $HTTP = new HTTP();
+        $HTTP->redirectTrustedURL($logout_url, $parameters);
     }
 }
