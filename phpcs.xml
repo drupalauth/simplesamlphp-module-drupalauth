@@ -2,7 +2,7 @@
 <ruleset name="drupalauth">
     <description>The coding standard for drupalauth.</description>
 
-    <rule ref="PSR2" />
-    <file>./lib</file>
-    <file>./www</file>
+    <rule ref="PSR12" />
+    <file>./src</file>
+    <file>./public</file>
 </ruleset>
