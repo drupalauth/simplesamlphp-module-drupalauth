@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class UserTest extends TestCase
 {
 
-    public function userDataProvider()
+    public static function userDataProvider()
     {
         return [
             [
@@ -58,7 +58,7 @@ class UserTest extends TestCase
         $this->assertEquals($count, count($user->getIterator()), 'Returned expected quantity of fields');
     }
 
-    public function userHasFieldDataProvider()
+    public static function userHasFieldDataProvider()
     {
         return [
             [

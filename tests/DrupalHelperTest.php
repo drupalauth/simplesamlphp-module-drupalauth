@@ -24,7 +24,7 @@ class DrupalHelperTest extends TestCase
     }
 
 
-    public function getPropertyNameProvider(): array
+    public static function getPropertyNameProvider(): array
     {
         return [
             [[], 'value'],
@@ -46,7 +46,7 @@ class DrupalHelperTest extends TestCase
     }
 
 
-    public function getAttributeNameProvider(): array
+    public static function getAttributeNameProvider(): array
     {
         return [
             [['field_name' => 'some_field'], 'some_field:value'],
@@ -73,7 +73,7 @@ class DrupalHelperTest extends TestCase
         $this->assertEquals($expected_attribute_name, $attribute_name, 'Expected attribute name returned');
     }
 
-    public function getAllAttributesDataProvider(): array
+    public static function getAllAttributesDataProvider(): array
     {
         return [
             // Set #0.
@@ -180,7 +180,7 @@ class DrupalHelperTest extends TestCase
         $this->assertEquals($expected_attributes, $attributes, 'Expected attributes returned');
     }
 
-    public function getAttributesDataProvider(): array
+    public static function getAttributesDataProvider(): array
     {
         $field_values = [
             'field_name' => [
