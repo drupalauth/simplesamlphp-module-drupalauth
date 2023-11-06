@@ -3,6 +3,7 @@
 namespace SimpleSAML\Module\drupalauth\Auth\Source;
 
 use Drupal\user\Entity\User;
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\drupalauth\ConfigHelper;
@@ -80,7 +81,7 @@ class UserPass extends UserPassBase
         /* Get the configuration for this module */
         $drupalAuthConfig = new ConfigHelper(
             $config,
-            'Authentication source ' . var_export($this->getAuthId(), true)
+            'Authentication source ' . $this->getAuthId()
         );
 
         $this->config = $drupalAuthConfig;

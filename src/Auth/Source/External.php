@@ -113,7 +113,7 @@ class External extends Source
         /* Get the configuration for this module */
         $drupalAuthConfig = new ConfigHelper(
             $config,
-            'Authentication source ' . var_export($this->getAuthId(), true)
+            'Authentication source ' . $this->getAuthId()
         );
 
         $this->config = $drupalAuthConfig;
