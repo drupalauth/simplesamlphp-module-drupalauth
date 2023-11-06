@@ -19,7 +19,7 @@ class ConfigHelper
     /**
      * The filesystem path to the Drupal directory
      */
-    private string $drupalroot;
+    private string $drupalRoot;
 
 
     /**
@@ -39,13 +39,13 @@ class ConfigHelper
     /**
    * The Drupal logout URL
    */
-    private string $drupal_logout_url;
+    private string $drupalLogoutUrl;
 
 
   /**
    * The Drupal login URL
    */
-    private string $drupal_login_url;
+    private string $drupalLoginUrl;
 
 
     /**
@@ -64,11 +64,11 @@ class ConfigHelper
       /* Get authsource configuration. */
         $config = Configuration::loadFromArray($config, $location);
 
-        $this->drupalroot = $config->getString('drupalroot');
+        $this->drupalRoot = $config->getString('drupalroot');
         $this->debug = $config->getOptionalBoolean('debug', false);
         $this->attributes = $config->getOptionalArray('attributes', null);
-        $this->drupal_logout_url = $config->getString('drupal_logout_url');
-        $this->drupal_login_url = $config->getString('drupal_login_url');
+        $this->drupalLogoutUrl = $config->getString('drupal_logout_url');
+        $this->drupalLoginUrl = $config->getString('drupal_login_url');
     }
 
     /**
@@ -86,9 +86,9 @@ class ConfigHelper
      *
      * @return string
      */
-    public function getDrupalroot(): string
+    public function getDrupalRoot(): string
     {
-        return $this->drupalroot;
+        return $this->drupalRoot;
     }
 
   /**
@@ -107,9 +107,9 @@ class ConfigHelper
      *
      * @return string
    */
-    public function getDrupalLogoutURL(): string
+    public function getDrupalLogoutUrl(): string
     {
-        return $this->drupal_logout_url;
+        return $this->drupalLogoutUrl;
     }
 
   /**
@@ -117,8 +117,8 @@ class ConfigHelper
    *
    * @return string
    */
-    public function getDrupalLoginURL(): string
+    public function getDrupalLoginUrl(): string
     {
-        return $this->drupal_login_url;
+        return $this->drupalLoginUrl;
     }
 }

@@ -125,21 +125,21 @@ class External extends Source
      * @return array|NULL  The user's attributes, or NULL if the user isn't
      *     authenticated.
      */
-    private function getUser($drupaluid): ?array
+    private function getUser($drupalUid): ?array
     {
-        if (!empty($drupaluid)) {
+        if (!empty($drupalUid)) {
             $drupalHelper = new DrupalHelper();
-            $drupalHelper->bootDrupal($this->config->getDrupalroot());
+            $drupalHelper->bootDrupal($this->config->getDrupalRoot());
 
             // Load the user object from Drupal.
-            $drupaluser = User::load($drupaluid);
-            if ($drupaluser->isBlocked()) {
+            $drupalUser = User::load($drupalUid);
+            if ($drupalUser->isBlocked()) {
                 throw new Error('NOACCESS');
             }
 
-            $requested_attributes = $this->config->getAttributes();
+            $requestedAttributes = $this->config->getAttributes();
 
-            return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
+            return $drupalHelper->getAttributes($drupalUser, $requestedAttributes);
         }
 
         return null;
@@ -207,7 +207,7 @@ class External extends Source
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = $this->config->getDrupalLoginURL();
+        $authPage = $this->config->getDrupalLoginUrl();
 
         /*
          * The redirect to the authentication page.
@@ -215,8 +215,8 @@ class External extends Source
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        $HTTP = new HTTP();
-        $HTTP->redirectTrustedURL($authPage, [
+        $http = new HTTP();
+        $http->redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
         ]);
 
@@ -322,13 +322,13 @@ class External extends Source
             session_start();
         }
 
-        $logout_url = $this->config->getDrupalLogoutURL();
+        $logoutUrl = $this->config->getDrupalLogoutUrl();
         $parameters = [];
         if (!empty($state['ReturnTo'])) {
             $parameters['ReturnTo'] = $state['ReturnTo'];
         }
 
-        $HTTP = new HTTP();
-        $HTTP->redirectTrustedURL($logout_url, $parameters);
+        $http = new HTTP();
+        $http->redirectTrustedURL($logoutUrl, $parameters);
     }
 }

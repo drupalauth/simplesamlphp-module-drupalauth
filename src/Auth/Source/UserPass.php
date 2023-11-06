@@ -108,7 +108,7 @@ class UserPass extends UserPassBase
         assert(is_string($password));
 
         $drupalHelper = new DrupalHelper();
-        $drupalHelper->bootDrupal($this->config->getDrupalroot());
+        $drupalHelper->bootDrupal($this->config->getDrupalRoot());
 
         /* @value \Drupal\user\UserAuth $userAuth */
         $userAuth = \Drupal::service('user.auth');
@@ -120,13 +120,13 @@ class UserPass extends UserPassBase
         }
 
         // Load the user object from Drupal.
-        $drupaluser = User::load($uid);
-        if ($drupaluser->isBlocked()) {
+        $drupalUser = User::load($uid);
+        if ($drupalUser->isBlocked()) {
             throw new Error('NOACCESS');
         }
 
-        $requested_attributes = $this->config->getAttributes();
+        $requestedAttributes = $this->config->getAttributes();
 
-        return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
+        return $drupalHelper->getAttributes($drupalUser, $requestedAttributes);
     }
 }
