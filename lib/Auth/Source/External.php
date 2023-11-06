@@ -153,16 +153,15 @@ class External extends Source
     {
         assert(is_array($state));
 
-        $attributes = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
-        if ($attributes !== null) {
-            /*
-             * The user is already authenticated.
-             *
-             * Add the users attributes to the $state-array, and return control
-             * to the authentication process.
-             */
-            $state['Attributes'] = $attributes;
-            return;
+      /*
+         * The user is already authenticated.
+         *
+         * Add the users attributes to the $state-array, and return control
+         * to the authentication process.
+         */
+      if (!empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
+          $state['Attributes'] = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
+          return;
         }
 
         /*
@@ -271,11 +270,16 @@ class External extends Source
             throw new Exception('Authentication source type changed.');
         }
 
-      /*
-       * OK, now we know that our current state is sane. Time to actually log the user in.
-       *
-       * First we check that the user is acutally logged in, and didn't simply skip the login page.
-       */
+        /*
+         * First we check that the user is acutally logged in, and didn't simply skip the login page.
+         */
+        if (empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
+          throw new Exception('User ID is missing.');
+        }
+
+        /*
+         * OK, now we know that our current state is sane. Time to actually log the user in.
+         */
         $attributes = $source->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
         if ($attributes === null) {
             /*
