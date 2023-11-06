@@ -10,43 +10,9 @@ use SimpleSAML\Configuration;
 class ConfigHelper
 {
     /**
-     * String with the location of this configuration.
-     * Used for error reporting.
+     * @var \SimpleSAML\Configuration
      */
-    private string $location;
-
-
-    /**
-     * The filesystem path to the Drupal directory
-     */
-    private string $drupalRoot;
-
-
-    /**
-     * Whether debug output is enabled.
-     *
-     * @var bool
-     */
-    private bool $debug;
-
-
-  /**
-   * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
-   */
-    private ?array $attributes;
-
-
-    /**
-   * The Drupal logout URL
-   */
-    private string $drupalLogoutUrl;
-
-
-  /**
-   * The Drupal login URL
-   */
-    private string $drupalLoginUrl;
-
+    private Configuration $config;
 
     /**
      * Constructor for this configuration parser.
@@ -56,19 +22,7 @@ class ConfigHelper
      */
     public function __construct(array $config, string $location)
     {
-        assert(is_array($config));
-        assert(is_string($location));
-
-        $this->location = $location;
-
-      /* Get authsource configuration. */
-        $config = Configuration::loadFromArray($config, $location);
-
-        $this->drupalRoot = $config->getString('drupalroot');
-        $this->debug = $config->getOptionalBoolean('debug', false);
-        $this->attributes = $config->getOptionalArray('attributes', null);
-        $this->drupalLogoutUrl = $config->getString('drupal_logout_url');
-        $this->drupalLoginUrl = $config->getString('drupal_login_url');
+        $this->config = Configuration::loadFromArray($config, $location);
     }
 
     /**
@@ -78,7 +32,7 @@ class ConfigHelper
      */
     public function getDebug(): bool
     {
-        return $this->debug;
+        return $this->config->getOptionalBoolean('debug', false);
     }
 
     /**
@@ -88,7 +42,7 @@ class ConfigHelper
      */
     public function getDrupalRoot(): string
     {
-        return $this->drupalRoot;
+        return $this->config->getString('drupalroot');
     }
 
   /**
@@ -98,7 +52,7 @@ class ConfigHelper
    */
     public function getAttributes(): ?array
     {
-        return $this->attributes;
+        return $this->config->getOptionalArray('attributes', null);
     }
 
 
@@ -109,7 +63,7 @@ class ConfigHelper
    */
     public function getDrupalLogoutUrl(): string
     {
-        return $this->drupalLogoutUrl;
+        return $this->config->getString('drupal_logout_url');
     }
 
   /**
@@ -119,6 +73,6 @@ class ConfigHelper
    */
     public function getDrupalLoginUrl(): string
     {
-        return $this->drupalLoginUrl;
+        return $this->config->getString('drupal_login_url');
     }
 }
