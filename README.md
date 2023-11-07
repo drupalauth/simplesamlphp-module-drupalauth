@@ -1,6 +1,6 @@
 ## Introduction
 
-[![Build Status](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth.svg?branch=main)](https://travis-ci.com/drupalauth/simplesamlphp-module-drupalauth)
+[![Build Status](https://app.travis-ci.com/drupalauth/simplesamlphp-module-drupalauth.svg?branch=main)](https://app.travis-ci.com/drupalauth/simplesamlphp-module-drupalauth)
 
 Drupal + SimpleSAMLphp + drupalauth = Complete SAML Identity Provider (IdP)
 
