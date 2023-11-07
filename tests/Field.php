@@ -9,7 +9,7 @@
 class Field
 {
 
-    protected $properties = [];
+    protected array $properties = [];
 
     public function __set($name, $value)
     {
@@ -18,11 +18,11 @@ class Field
 
     public function __get($name)
     {
-        return isset($this->properties[$name]) ? $this->properties[$name] : null;
+        return $this->properties[$name] ?? null;
     }
 
 
-    public function getProperties()
+    public function getProperties(): array
     {
         return array_keys($this->properties);
     }

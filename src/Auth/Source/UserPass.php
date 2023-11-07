@@ -3,6 +3,7 @@
 namespace SimpleSAML\Module\drupalauth\Auth\Source;
 
 use Drupal\user\Entity\User;
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\drupalauth\ConfigHelper;
@@ -56,13 +57,12 @@ use SimpleSAML\Module\drupalauth\DrupalHelper;
  */
 class UserPass extends UserPassBase
 {
-
     /**
      * Configuration object.
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
      */
-    private $config;
+    private ConfigHelper $config;
 
     /**
      * Constructor for this authentication source.
@@ -70,7 +70,7 @@ class UserPass extends UserPassBase
      * @param array $info Information about this authentication source.
      * @param array $config Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
         assert(is_array($info));
         assert(is_array($config));
@@ -81,7 +81,7 @@ class UserPass extends UserPassBase
         /* Get the configuration for this module */
         $drupalAuthConfig = new ConfigHelper(
             $config,
-            'Authentication source ' . var_export($this->getAuthId(), true)
+            'Authentication source ' . $this->getAuthId()
         );
 
         $this->config = $drupalAuthConfig;
@@ -91,23 +91,25 @@ class UserPass extends UserPassBase
     /**
      * Attempt to log in using the given username and password.
      *
-     * On a successful login, this function should return the users attributes. On failure,
-     * it should throw an exception. If the error was caused by the user entering the wrong
-     * username or password, a SimpleSAML_Error_Error('WRONGUSERPASS') should be thrown.
+     * On a successful login, this function should return the users attributes.
+     * On failure, it should throw an exception. If the error was caused by the
+     * user entering the wrong username or password, a
+     * SimpleSAML_Error_Error('WRONGUSERPASS') should be thrown.
      *
      * Note that both the username and the password are UTF-8 encoded.
      *
      * @param string $username The username the user wrote.
      * @param string $password The password the user wrote.
+     *
      * @return array  Associative array with the users attributes.
      */
-    protected function login($username, $password)
+    protected function login(string $username, string $password): array
     {
         assert(is_string($username));
         assert(is_string($password));
 
         $drupalHelper = new DrupalHelper();
-        $drupalHelper->bootDrupal($this->config->getDrupalroot());
+        $drupalHelper->bootDrupal($this->config->getDrupalRoot());
 
         /* @value \Drupal\user\UserAuth $userAuth */
         $userAuth = \Drupal::service('user.auth');
@@ -119,13 +121,13 @@ class UserPass extends UserPassBase
         }
 
         // Load the user object from Drupal.
-        $drupaluser = User::load($uid);
-        if ($drupaluser->isBlocked()) {
+        $drupalUser = User::load($uid);
+        if ($drupalUser->isBlocked()) {
             throw new Error('NOACCESS');
         }
 
-        $requested_attributes = $this->config->getAttributes();
+        $requestedAttributes = $this->config->getAttributes();
 
-        return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
+        return $drupalHelper->getAttributes($drupalUser, $requestedAttributes);
     }
 }

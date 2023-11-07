@@ -1,0 +1,53 @@
+name: drupalauth
+
+services:
+  php80:
+    type: php:8.0
+    via: cli
+    xdebug: "off"
+    composer_version: 2
+  php81:
+    type: php:8.1
+    via: cli
+    xdebug: "off"
+    composer_version: 2
+  php82:
+    type: php:8.2
+    via: cli
+    xdebug: "off"
+    composer_version: 2
+
+
+
+
+env_file:
+  - .lando.env
+
+tooling:
+  style-lint:
+    cmd: ./scripts/style-lint.sh
+    service: :service
+    options:
+      service:
+        default: php80
+        describe: Run phpcs in different service
+        alias:
+          - s
+  style-fix:
+    cmd: ./scripts/style-fix.sh
+    service: :service
+    options:
+      service:
+        default: php80
+        describe: Run phpcs in different service
+        alias:
+          - s
+  phpunit:
+    cmd: ./scripts/phpunit.sh
+    service: :service
+    options:
+      service:
+        default: php80
+        describe: Run phpunit in different service
+        alias:
+          - s

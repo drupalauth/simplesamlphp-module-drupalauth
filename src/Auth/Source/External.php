@@ -74,28 +74,27 @@ use SimpleSAML\Utils\HTTP;
  */
 class External extends Source
 {
+    /**
+     * The string used to identify Drupal user ID.
+     */
+    public const DRUPALAUTH_EXTERNAL_USER_ID = 'drupalauth:External:UserID';
 
-  /**
-   * The string used to identify Drupal user ID.
-   */
-    const DRUPALAUTH_EXTERNAL_USER_ID = 'drupalauth:External:UserID';
+    /**
+     * The string used to identify authentication source.
+     */
+    public const DRUPALAUTH_AUTH_ID = 'drupalauth:AuthID';
 
-  /**
-   * The string used to identify authentication source.
-   */
-    const DRUPALAUTH_AUTH_ID = 'drupalauth:AuthID';
+    /**
+     * The string used to identify our states.
+     */
+    public const DRUPALAUTH_EXTERNAL = 'drupalauth:External';
 
-  /**
-   * The string used to identify our states.
-   */
-    const DRUPALAUTH_EXTERNAL = 'drupalauth:External';
-
-  /**
+    /**
      * Configuration object.
      *
      * @var \SimpleSAML\Module\drupalauth\ConfigHelper
      */
-    private $config;
+    private ConfigHelper $config;
 
     /**
      * Constructor for this authentication source.
@@ -103,7 +102,7 @@ class External extends Source
      * @param array $info Information about this authentication source.
      * @param array $config Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
         assert(is_array($info));
         assert(is_array($config));
@@ -114,54 +113,56 @@ class External extends Source
         /* Get the configuration for this module */
         $drupalAuthConfig = new ConfigHelper(
             $config,
-            'Authentication source ' . var_export($this->getAuthId(), true)
+            'Authentication source ' . $this->getAuthId()
         );
 
         $this->config = $drupalAuthConfig;
     }
 
-
     /**
      * Retrieve attributes for the user.
      *
-     * @return array|NULL  The user's attributes, or NULL if the user isn't authenticated.
+     * @return array|NULL  The user's attributes, or NULL if the user isn't
+     *     authenticated.
      */
-    private function getUser($drupaluid)
+    private function getUser($drupalUid): ?array
     {
-        if (!empty($drupaluid)) {
+        if (!empty($drupalUid)) {
             $drupalHelper = new DrupalHelper();
-            $drupalHelper->bootDrupal($this->config->getDrupalroot());
+            $drupalHelper->bootDrupal($this->config->getDrupalRoot());
 
-          // Load the user object from Drupal.
-            $drupaluser = User::load($drupaluid);
-            if ($drupaluser->isBlocked()) {
+            // Load the user object from Drupal.
+            $drupalUser = User::load($drupalUid);
+            if ($drupalUser->isBlocked()) {
                 throw new Error('NOACCESS');
             }
 
-            $requested_attributes = $this->config->getAttributes();
+            $requestedAttributes = $this->config->getAttributes();
 
-            return $drupalHelper->getAttributes($drupaluser, $requested_attributes);
+            return $drupalHelper->getAttributes($drupalUser, $requestedAttributes);
         }
+
+        return null;
     }
 
     /**
      * Log in using an external authentication helper.
      *
-     * @param array &$state  Information about the current authentication.
+     * @param array &$state Information about the current authentication.
      */
-    public function authenticate(&$state)
+    public function authenticate(array &$state): void
     {
         assert(is_array($state));
 
-      /*
+        /*
          * The user is already authenticated.
          *
          * Add the users attributes to the $state-array, and return control
          * to the authentication process.
          */
-      if (!empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
-          $state['Attributes'] = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
-          return;
+        if (!empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
+            $state['Attributes'] = $this->getUser($state[self::DRUPALAUTH_EXTERNAL_USER_ID]);
+            return;
         }
 
         /*
@@ -206,7 +207,7 @@ class External extends Source
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = $this->config->getDrupalLoginURL();
+        $authPage = $this->config->getDrupalLoginUrl();
 
         /*
          * The redirect to the authentication page.
@@ -214,7 +215,8 @@ class External extends Source
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        HTTP::redirectTrustedURL($authPage, [
+        $http = new HTTP();
+        $http->redirectTrustedURL($authPage, [
             'ReturnTo' => $returnTo,
         ]);
 
@@ -230,7 +232,7 @@ class External extends Source
      * This function resumes the authentication process after the user has
      * entered his or her credentials.
      *
-     * @param array &$state  The authentication state.
+     * @param array &$state The authentication state.
      */
     public static function resume($stateID)
     {
@@ -274,7 +276,7 @@ class External extends Source
          * First we check that the user is acutally logged in, and didn't simply skip the login page.
          */
         if (empty($state[self::DRUPALAUTH_EXTERNAL_USER_ID])) {
-          throw new Exception('User ID is missing.');
+            throw new Exception('User ID is missing.');
         }
 
         /*
@@ -306,12 +308,12 @@ class External extends Source
     }
 
     /**
-     * This function is called when the user start a logout operation, for example
-     * by logging out of a SP that supports single logout.
+     * This function is called when the user start a logout operation, for
+     * example by logging out of a SP that supports single logout.
      *
-     * @param array &$state  The logout state array.
+     * @param array &$state The logout state array.
      */
-    public function logout(&$state)
+    public function logout(array &$state): void
     {
         assert(is_array($state));
 
@@ -320,12 +322,13 @@ class External extends Source
             session_start();
         }
 
-        $logout_url = $this->config->getDrupalLogoutURL();
+        $logoutUrl = $this->config->getDrupalLogoutUrl();
         $parameters = [];
         if (!empty($state['ReturnTo'])) {
             $parameters['ReturnTo'] = $state['ReturnTo'];
         }
 
-        HTTP::redirectTrustedURL($logout_url, $parameters);
+        $http = new HTTP();
+        $http->redirectTrustedURL($logoutUrl, $parameters);
     }
 }

@@ -2,7 +2,7 @@
 
 class User implements IteratorAggregate
 {
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * User constructor.
@@ -11,7 +11,7 @@ class User implements IteratorAggregate
      *   Each key corresponds to field name. Each value either scalar or array. Scalar would would be treated as index 0
      *   value of 'value' property. In case of array
      */
-    public function __construct($values)
+    public function __construct(array $values)
     {
         foreach ($values as $field_name => $field_value) {
             $this->fields[$field_name] = new FieldList();
@@ -37,6 +37,6 @@ class User implements IteratorAggregate
 
     public function __get($field_name)
     {
-        return isset($this->fields[$field_name]) ? $this->fields[$field_name] : null;
+        return $this->fields[$field_name] ?? null;
     }
 }
