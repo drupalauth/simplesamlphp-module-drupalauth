@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\drupalauth\Auth\Source;
 
+use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\drupalauth\ConfigHelper;
 
 /**
@@ -77,7 +78,7 @@ use SimpleSAML\Module\drupalauth\ConfigHelper;
  * @package drupalauth
  * @version $Id$
  */
-class UserPass extends \SimpleSAML\Module\core\Auth\UserPassBase {
+class UserPass extends UserPassBase {
 
 	/**
 	 * Whether to turn on debugging
