@@ -318,7 +318,7 @@ class sspmod_drupalauth_Auth_Source_External extends SimpleSAML_Auth_Source {
 	 * @param array &$state  Information about the current authentication.
 	 */
 	public function authenticate(&$state) {
-		assert(is_array($state) );
+		assert(is_array($state));
 
 		$attributes = $this->getUser();
 		if ($attributes !== NULL) {
