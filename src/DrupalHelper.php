@@ -25,7 +25,6 @@ class DrupalHelper
         $originalDir = getcwd();
         chdir($drupalRoot);
         $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod', true, $drupalRoot);
-        $kernel->invalidateContainer();
         $kernel->boot();
         $request->attributes->set(RouteObjectInterface::ROUTE_OBJECT, new Route('<none>'));
         $request->attributes->set(RouteObjectInterface::ROUTE_NAME, '<none>');
