@@ -3,7 +3,9 @@
 namespace SimpleSAML\Module\drupalauth;
 
 use Drupal\Core\DrupalKernel;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
 
 class DrupalHelper
 {
@@ -13,6 +15,8 @@ class DrupalHelper
      * Boot Drupal.
      *
      * @param string $drupalRoot Path to Drupal root.
+     *
+     * @see \Drupal\Core\Test\FunctionalTestSetupTrait::initKernel()
      */
     public function bootDrupal(string $drupalRoot)
     {
@@ -21,8 +25,11 @@ class DrupalHelper
         $originalDir = getcwd();
         chdir($drupalRoot);
         $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod', true, $drupalRoot);
+        $kernel->invalidateContainer();
         $kernel->boot();
-        $kernel->loadLegacyIncludes();
+        $request->attributes->set(RouteObjectInterface::ROUTE_OBJECT, new Route('<none>'));
+        $request->attributes->set(RouteObjectInterface::ROUTE_NAME, '<none>');
+        $kernel->preHandle($request);
         chdir($originalDir);
     }
 
