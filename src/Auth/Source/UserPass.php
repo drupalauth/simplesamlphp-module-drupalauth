@@ -1,9 +1,14 @@
 <?php
 
+namespace SimpleSAML\Module\drupalauth\Auth\Source;
+
+use SimpleSAML\Module\core\Auth\UserPassBase;
+use SimpleSAML\Module\drupalauth\ConfigHelper;
+
 /**
  * Drupal authentication source for simpleSAMLphp
  *
- * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org 
+ * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org
  *
  * This class is a Drupal authentication source which authenticates users
  * against a Drupal site located on the same server.
@@ -21,18 +26,18 @@
  * -------------------------------------------------------------------
  *
  * To use this put something like this into config/authsources.php:
- *	
+ *
  * 	'drupal-userpass' => array(
  * 		'drupalauth:UserPass',
- * 
+ *
  * 		// The filesystem path of the Drupal directory.
  * 		'drupalroot' => '/var/www/drupal-7.0',
- * 
+ *
  * 		// Whether to turn on debug
  * 		'debug' => true,
- * 
- * 		// Which attributes should be retrieved from the Drupal site.				     
- * 				     
+ *
+ * 		// Which attributes should be retrieved from the Drupal site.
+ *
  *              'attributes' => array(
  *                                    array('drupaluservar'   => 'uid',  'callit' => 'uid'),
  *                                     array('drupaluservar' => 'name', 'callit' => 'cn'),
@@ -43,12 +48,12 @@
  *                                     array('drupaluservar' => 'roles','callit' => 'roles'),
  *                                   ),
  * 	),
- * 
+ *
  * Format of the 'attributes' array explained:
  *
  * 'attributes' can be an associate array of attribute names, or NULL, in which case
  * all attributes are fetched.
- * 
+ *
  * If you want everything (except) the password hash do this:
  *  	'attributes' => NULL,
  *
@@ -59,10 +64,10 @@
  *                     array('drupaluservar' => 'mail', 'callit' => 'mail'),
  *                     array('drupaluservar' => 'roles','callit' => 'roles'),
  *                      ),
- * 
- *  The value for 'drupaluservar' is the variable name for the attribute in the 
+ *
+ *  The value for 'drupaluservar' is the variable name for the attribute in the
  *  Drupal user object.
- * 
+ *
  *  The value for 'callit' is the name you want the attribute to have when it's
  *  returned after authentication. You can use the same value in both or you can
  *  customize by putting something different in for 'callit'. For an example,
@@ -73,7 +78,7 @@
  * @package drupalauth
  * @version $Id$
  */
-class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBase {
+class UserPass extends UserPassBase {
 
 	/**
 	 * Whether to turn on debugging
@@ -103,9 +108,9 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 
 		/* Call the parent constructor first, as required by the interface. */
 		parent::__construct($info, $config);
-		
-		/* Get the configuration for this module */	
-		$drupalAuthConfig = new sspmod_drupalauth_ConfigHelper($config,
+
+		/* Get the configuration for this module */
+		$drupalAuthConfig = new ConfigHelper($config,
 			'Authentication source ' . var_export($this->authId, TRUE));
 
 		$this->debug      = $drupalAuthConfig->getDebug();
@@ -125,7 +130,7 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
      * prevents the need for hackery here and makes this module work better in different environments.
      */
 		drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
-		
+
 		// we need to be able to call Drupal user function so we load some required modules
     drupal_load('module', 'system');
 		drupal_load('module', 'user');
@@ -154,7 +159,7 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 		// authenticate the user
 		$drupaluid = user_authenticate($username, $password);
 		if(0 == $drupaluid){
-			throw new SimpleSAML_Error_Error('WRONGUSERPASS');
+			throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
 		}
 
 		// load the user object from Drupal
@@ -162,43 +167,43 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 
 		// get all the attributes out of the user object
 		$userAttrs = get_object_vars($drupaluser);
-		
+
 		// define some variables to use as arrays
 		$userAttrNames = null;
 		$attributes    = null;
-		
+
 		// figure out which attributes to include
 		if(NULL == $this->attributes){
 		   $userKeys = array_keys($userAttrs);
-		   
+
 		   // populate the attribute naming array
 		   foreach($userKeys as $userKey){
 		      $userAttrNames[$userKey] = $userKey;
 		   }
-		   
+
 		}else{
 		   // populate the array of attribute keys
 		   // populate the attribute naming array
 		   foreach($this->attributes as $confAttr){
-		   
+
 		      $userKeys[] = $confAttr['drupaluservar'];
 		      $userAttrNames[$confAttr['drupaluservar']] = $confAttr['callit'];
-		   
+
 		   }
-		   
+
 		}
-		   
+
 		// an array of the keys that should never be included
 		// (e.g., pass)
 		$skipKeys = array('pass');
 
-		// package up the user attributes	
+		// package up the user attributes
 		foreach($userKeys as $userKey){
 
 		  // skip any keys that should never be included
 		  if(!in_array($userKey, $skipKeys)){
 
-		    if(   is_string($userAttrs[$userKey]) 
+		    if(   is_string($userAttrs[$userKey])
 		       || is_numeric($userAttrs[$userKey])
 		       || is_bool($userAttrs[$userKey])    ){
 
@@ -217,7 +222,7 @@ class sspmod_drupalauth_Auth_Source_UserPass extends sspmod_core_Auth_UserPassBa
 
 		  }
 		}
-						    
+
 		return $attributes;
 	}
 

@@ -9,4 +9,7 @@
  * @package simpleSAMLphp
  * @version $Id$
  */
-sspmod_drupalauth_Auth_Source_External::resume();
+
+use SimpleSAML\Module\drupalauth\Auth\Source\External;
+
+External::resume($_REQUEST['State']);

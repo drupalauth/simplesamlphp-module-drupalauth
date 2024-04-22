@@ -1,9 +1,11 @@
 <?php
 
+namespace SimpleSAML\Module\drupalauth;
+
 /**
  * Drupal authentication source configuration parser.
  *
- * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org 
+ * Copyright SIL International, Steve Moitozo, <steve_moitozo@sil.org>, http://www.sil.org
  *
  * This class is a Drupal authentication source which authenticates users
  * against a Drupal site located on the same server.
@@ -18,7 +20,7 @@
  * @package drupalauth
  * @version $Id$
  */
-class sspmod_drupalauth_ConfigHelper {
+class ConfigHelper {
 
 
 	/**
@@ -79,7 +81,7 @@ class sspmod_drupalauth_ConfigHelper {
 		$this->location = $location;
 
 		/* Parse configuration. */
-		$config = SimpleSAML_Configuration::loadFromArray($config, $location);
+		$config = \SimpleSAML\Configuration::loadFromArray($config, $location);
 
 		$this->drupalroot = $config->getString('drupalroot');
 		$this->debug = $config->getBoolean('debug', FALSE);
@@ -89,7 +91,7 @@ class sspmod_drupalauth_ConfigHelper {
     $this->drupal_login_url = $config->getString('drupal_login_url', NULL);
 
 	}
-	
+
 
 	/**
 	 * Return the debug
@@ -97,7 +99,7 @@ class sspmod_drupalauth_ConfigHelper {
 	 * @param boolean $debug whether or not debugging should be turned on
 	 */
 	public function getDebug() {
-	   return $this->debug; 
+	   return $this->debug;
 	}
 
 	/**
@@ -106,7 +108,7 @@ class sspmod_drupalauth_ConfigHelper {
 	 * @param string $drupalroot the directory of the Drupal site
 	 */
 	public function getDrupalroot() {
-	   return $this->drupalroot; 
+	   return $this->drupalroot;
 	}
 
   /**
