@@ -8,7 +8,7 @@ Users interact with Drupal to create accounts, manage accounts, and authenticate
 
 The drupalauth module for simpleSAMLphp makes it easy to create a SAML or Shibboleth identity provider (IdP) by enabling authentication of users against a Drupal site on the same server. This allows the administrator to leverage the user management and integration capabilities of [Drupal](http://drupal.org) for managing the identity life cycle.
 
-NOTE: This is software establishes a SAML identity provider (IdP) using Drupal as the user database instead of LDAP. If you want to establish your Drupal site as a SAML service provider (SP) connected to a SAML or Shibboleth IdP, see the [simplesamlphp_auth](https://www.drupal.org/project/simplesamlphp_auth) module for Drupal.
+**NOTE:** This is software establishes a SAML identity provider (IdP) using Drupal as the user database instead of LDAP. If you want to establish your Drupal site as a SAML service provider (SP) connected to a SAML or Shibboleth IdP, see the [simplesamlphp_auth](https://www.drupal.org/project/simplesamlphp_auth) module for Drupal.
 
 ### simpleSAMLphp module
 
@@ -35,6 +35,13 @@ So in a X.Y.Z version:
 Example: for SimpleSAMLphp version 1.15.4 with Drupal version 8.5.6 and this module version 1 we will have tag 1.8.1. Same thing for Drupal 7 will be 1.7.1.
 
 `master` at the moment corresponds to 1.8.*. Branch `1.7` is respectfully for Drupal 7 (not composer integration yet).
+
+## Note on Drupal configuration
+
+Disabling `discovery` cache will prevent this module from functioning.
+
+See this issue <https://github.com/drupalauth/simplesamlphp-module-drupalauth/issues/71>, specifically
+[this comment](https://github.com/drupalauth/simplesamlphp-module-drupalauth/issues/71#issuecomment-815725363).
 
 ## Installation
 

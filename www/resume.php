@@ -9,4 +9,4 @@
 
 use SimpleSAML\Module\drupalauth\Auth\Source\External;
 
-External::resume();
+External::resume($_REQUEST['State']);
