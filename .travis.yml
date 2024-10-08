@@ -8,6 +8,8 @@ jobs:
       dist: jammy
     - php: '8.2'
       dist: jammy
+    - php: '8.3'
+      dist: jammy
 
 before_script: composer install
 script:
