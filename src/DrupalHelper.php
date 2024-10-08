@@ -24,6 +24,8 @@ class DrupalHelper
         $kernel->boot();
         $kernel->loadLegacyIncludes();
         chdir($originalDir);
+        \restore_exception_handler();
+        \restore_error_handler();
     }
 
     /**
