@@ -9,6 +9,8 @@ See the main [README.md](./README.md#branch-and-version-naming) for the details 
 
 ## [Unreleased]
 
+
+## [2.10.0]
 ### Fixed
 - Restored SimpleSAMLphp exception handler (#29, #35)
 - Bootstrap Drupal correctly from inside SimpleSAMLphp (#75, #98)
