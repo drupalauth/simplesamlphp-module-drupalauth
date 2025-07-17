@@ -90,8 +90,7 @@ class DrupalHelper
         $event = new SetAttributesEvent($this, $drupaluser, $requested_attributes, $attributes);
         $event_dispatcher = \Drupal::service('event_dispatcher');
         $event_dispatcher->dispatch($event, SetAttributesEvent::EVENT_NAME);
-        $attributes = $event->getAttributes();
-        return $attributes;
+        return $event->getAttributes();
     }
 
     /**
