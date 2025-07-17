@@ -4,6 +4,7 @@ namespace SimpleSAML\Module\drupalauth;
 
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Routing\RouteObjectInterface;
+use SimpleSAML\Module\drupalauth\Event\SetAttributesEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 
@@ -46,7 +47,7 @@ class DrupalHelper
         $forbiddenAttributes = $this->forbiddenAttributes;
 
         if (empty($requested_attributes)) {
-            return $this->getAllAttributes($drupaluser, $forbiddenAttributes);
+            $attributes = $this->getAllAttributes($drupaluser, $forbiddenAttributes);
         } else {
             foreach ($requested_attributes as $attribute) {
                 $field_name = $attribute['field_name'];
@@ -86,8 +87,10 @@ class DrupalHelper
                 }
             }
         }
-
-        return $attributes;
+        $event = new SetAttributesEvent($this, $drupaluser, $requested_attributes, $attributes);
+        $event_dispatcher = \Drupal::service('event_dispatcher');
+        $event_dispatcher->dispatch($event, SetAttributesEvent::EVENT_NAME);
+        return $event->getAttributes();
     }
 
     /**
@@ -124,7 +127,7 @@ class DrupalHelper
         return $attributes;
     }
 
-    protected function getPropertyName($attribute_definition)
+    public function getPropertyName($attribute_definition)
     {
         $property_name = 'value';
         if (!empty($attribute_definition['field_property'])) {
@@ -134,7 +137,7 @@ class DrupalHelper
         return $property_name;
     }
 
-    protected function getAttributeName($attribute_definition)
+    public function getAttributeName($attribute_definition)
     {
         if (!empty($attribute_definition['attribute_name'])) {
             return $attribute_definition['attribute_name'];
